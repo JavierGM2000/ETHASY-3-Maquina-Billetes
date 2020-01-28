@@ -1,3 +1,5 @@
+package ethasy3maquinabilletes;
+
 
 import java.util.ArrayList;
 
