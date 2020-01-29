@@ -30,7 +30,7 @@ public class Main {
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
-        Image dimg = img.getScaledInstance(height, width,Image.SCALE_SMOOTH);
+        Image dimg = img.getScaledInstance(width, height,Image.SCALE_SMOOTH);
         ImageIcon imageIcon = new ImageIcon(dimg);
         return imageIcon;
     }
@@ -40,35 +40,134 @@ public class Main {
         JPanel[] ListaPanel= new JPanel[8];
         VentanaPrincipal()
         {
-            ListaPanel[0]=new Bienvenido(600,800);
+            setLayout(null);
+            this.setBackground(Color.red);
+            //this.setBounds(0, 0, 600, 800);
+            ListaPanel[0]=new Bienvenido(800,600,this);
+            ListaPanel[0].setBounds(0, 0, 800, 600);
             ListaPanel[0].setVisible(true);
             add(ListaPanel[0]);
+
+            ListaPanel[1]=new Login(800,600,this);
+            ListaPanel[1].setBounds(0, 0, 800, 600);
+            ListaPanel[1].setVisible(false);
+            add(ListaPanel[1]);
+        }
+
+        void PanelChanger(int desde,int a_cual)
+        {
+            ListaPanel[desde].setVisible(false);
+            ListaPanel[a_cual].setVisible(true);
         }
     }
 
-    static public class Bienvenido extends JPanel
+    static public class Bienvenido extends JPanel implements ActionListener
     {
         ImageIcon fondo;
         JLabel imgfondo;
+        JButton Cambiar;
+        VentanaPrincipal Padre;
 
-        Bienvenido(int w,int h)
+        Bienvenido(int w,int h,VentanaPrincipal Parent)
         {
-            GridBagConstraints c = new GridBagConstraints();
-            c.fill = GridBagConstraints.HORIZONTAL;
-            c.gridx = 0;
-            c.gridy = 0;
-            this.setBounds(0, 0, w, h);
-            this.setLayout(new GridBagLayout());
-            JButton test= new JButton();
-            /*fondo=ResizeImage("img\\FondoBienvenida.png",w,h);
+            Padre=Parent;
+            setLayout(null);
+            this.setBackground(Color.BLUE);
+            this.setPreferredSize(new Dimension(w, h));
+            //JButton test= new JButton();
+            fondo=ResizeImage("img\\FondoBienvenida.png",w,h);
             imgfondo=new JLabel(fondo);
-            imgfondo.setBounds(0, 0, w, h);*/
-            test.setBounds(0,0,100,100);
-            add(test,c);
-            //add(imgfondo,c);
+            imgfondo.setBounds(0, -25, 800, 600);
+            add(imgfondo);
+
+            Cambiar = new JButton();
+            Cambiar.setBounds(0,0,800,600);
+            Cambiar.setVisible(true);
+            Cambiar.addActionListener(this);
+            Cambiar.setLayout(null);
+            Cambiar.setOpaque(false);
+            Cambiar.setContentAreaFilled(false);
+            add(Cambiar);
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            if(e.getSource()==Cambiar)
+            {
+                Padre.PanelChanger(0, 1);
+                System.out.println("Salir Bienvenida");
+            }
         }
 
     }
+
+     static public class Login extends JPanel implements ActionListener
+     {
+        ImageIcon fondo;
+        JLabel imgfondo;
+        JLabel textDNI,textPSWD;
+        JTextField inDNI, inPSWD;
+        JButton Login,Registrar,Volver;
+        VentanaPrincipal Padre;
+
+        Login(int w,int h,VentanaPrincipal Parent)
+        {
+            Padre = Parent;
+            setLayout(null);
+            this.setBackground(Color.WHITE);
+
+            textDNI = new JLabel("DNI:");
+            textDNI.setFont(new Font(textDNI.getFont().getName(), Font.PLAIN, 30));
+            textDNI.setBounds(260, 120, 100, 50);
+            add(textDNI);
+
+            inDNI =  new JTextField();
+            inDNI.setBounds(300,170,200,50);
+            inDNI.setFont(new Font(inDNI.getFont().getName(), Font.PLAIN, 20));
+            add(inDNI);
+
+            textPSWD = new JLabel("Contraseña:");
+            textPSWD.setFont(textDNI.getFont());
+            textPSWD.setBounds(260, 220, 300, 50);
+            add(textPSWD);
+
+            inPSWD =  new JTextField();
+            inPSWD.setBounds(300,270,200,50);
+            inPSWD.setFont(inDNI.getFont());
+            add(inPSWD);
+
+            Login= new JButton("Login");
+            Login.setBounds(248, 350, 300, 40);
+            Login.setFont(inDNI.getFont());
+            add(Login);
+
+            Registrar= new JButton("Registrarse");
+            Registrar.setBounds(248, 400, 300, 40);
+            Registrar.setFont(inDNI.getFont());
+            add(Registrar);
+
+            Volver= new JButton("Volver");
+            Volver.setBounds(275, 460, 250, 60);
+            Volver.setFont(inDNI.getFont());
+            Volver.addActionListener(this);
+            add(Volver);
+
+            fondo=ResizeImage("img\\FondoLogin.png",w,h);
+            imgfondo=new JLabel(fondo);
+
+            imgfondo.setBounds(0, -25, 800, 600);
+            add(imgfondo);
+
+            
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            if(e.getSource()==Volver)
+            {
+                Padre.PanelChanger(1, 0);
+            }
+        }
+
+     }
 
     /**
      * @param args the command line arguments
