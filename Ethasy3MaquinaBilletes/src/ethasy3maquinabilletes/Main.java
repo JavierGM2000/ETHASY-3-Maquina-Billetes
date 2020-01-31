@@ -22,6 +22,10 @@ import javax.imageio.ImageIO;
  */
 public class Main {
 
+    static char LetrasDNI[]=new char[]{'t','r','w','a','g','m','y','f','p','d',
+                                'x','b','n','j','z','s','q','v','h',
+                                'l','c','k','e'};
+
     static ImageIcon ResizeImage(String Path, int width, int height)
     {
         BufferedImage img=null;
@@ -105,9 +109,11 @@ public class Main {
         ImageIcon fondo;
         JLabel imgfondo;
         JLabel textDNI,textPSWD;
-        JTextField inDNI, inPSWD;
+        JTextField inDNI;
+        JPasswordField inPSWD;
         JButton Login,Registrar,Volver;
         VentanaPrincipal Padre;
+        JLabel Error;
 
         Login(int w,int h,VentanaPrincipal Parent)
         {
@@ -130,7 +136,7 @@ public class Main {
             textPSWD.setBounds(260, 220, 300, 50);
             add(textPSWD);
 
-            inPSWD =  new JTextField();
+            inPSWD =  new JPasswordField();
             inPSWD.setBounds(300,270,200,50);
             inPSWD.setFont(inDNI.getFont());
             add(inPSWD);
@@ -138,6 +144,7 @@ public class Main {
             Login= new JButton("Login");
             Login.setBounds(248, 350, 300, 40);
             Login.setFont(inDNI.getFont());
+            Login.addActionListener(this);
             add(Login);
 
             Registrar= new JButton("Registrarse");
@@ -151,19 +158,67 @@ public class Main {
             Volver.addActionListener(this);
             add(Volver);
 
+            Error=new JLabel("Error");
+            Error.setForeground(Color.RED);
+            Error.setBounds(228, 520, 300, 20);
+            add(Error);
+
             fondo=ResizeImage("img\\FondoLogin.png",w,h);
             imgfondo=new JLabel(fondo);
-
             imgfondo.setBounds(0, -25, 800, 600);
             add(imgfondo);
 
             
         }
 
+        void SetError(int ErrorCod)
+        {
+            switch(ErrorCod)
+            {
+                case (1):
+                    Error.setText("El DNI tiene que tener 9 caracteres");
+                    break;
+                case (2):
+                    Error.setText("El DNI no es correcto");
+                    break;
+            }
+        }
+
+
         public void actionPerformed(ActionEvent e) {
             if(e.getSource()==Volver)
             {
                 Padre.PanelChanger(1, 0);
+                return;
+            }
+            if(e.getSource()==Login)
+            {
+                String DNI= inDNI.getText();
+                if(DNI.length()!=9)
+                {
+                    SetError(1);
+                    return;
+                }
+                for(int i=0;i<8;i++)
+                {
+                    if(DNI.toLowerCase().charAt(i)<'0'||DNI.toLowerCase().charAt(i)>'9')
+                    {
+                        SetError(2);
+                    }
+                }
+                int NumDNI= Integer.parseInt(DNI.substring(0, 8));
+                if(LetrasDNI[NumDNI%23]!=DNI.toLowerCase().charAt(8))
+                {
+                    SetError(2);
+                    return;
+                }
+
+
+
+                if(inPSWD.getPassword().length>15)
+                {
+
+                }
             }
         }
 
