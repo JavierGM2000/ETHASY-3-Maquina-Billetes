@@ -16,6 +16,7 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import javax.imageio.ImageIO;
+import java.sql.*;
 /**
  *
  * @author Suplente
@@ -41,9 +42,13 @@ public class Main {
 
     static public class VentanaPrincipal extends JFrame
     {
+        String url="jdbc:mysql://localhost:3306/ethasy3";
+        Connection mycon;
         JPanel[] ListaPanel= new JPanel[8];
-        VentanaPrincipal()
+        VentanaPrincipal() throws SQLException, ClassNotFoundException
         {
+            mycon = DriverManager.getConnection(url, "root", "");
+            
             setLayout(null);
             this.setBackground(Color.red);
             //this.setBounds(0, 0, 600, 800);
@@ -56,6 +61,14 @@ public class Main {
             ListaPanel[1].setBounds(0, 0, 800, 600);
             ListaPanel[1].setVisible(false);
             add(ListaPanel[1]);
+
+            Statement mysts= mycon.createStatement();
+            String sql="select * from CLIENTE";
+            ResultSet rs = mysts.executeQuery(sql);
+            while(rs.next())
+            {
+                System.out.println(rs.getString("DNI"));
+            }
         }
 
         void PanelChanger(int desde,int a_cual)
@@ -227,7 +240,7 @@ public class Main {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException, ClassNotFoundException {
         // TODO code application logic here
         /*MEGATEST*/
         VentanaPrincipal Princip= new VentanaPrincipal();
