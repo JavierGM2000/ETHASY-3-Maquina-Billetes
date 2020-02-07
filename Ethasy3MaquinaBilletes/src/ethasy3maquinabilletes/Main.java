@@ -57,7 +57,7 @@ public class Main {
             //this.setBounds(0, 0, 600, 800);
             ListaPanel[0]=new BienvenidaVentana(800,600,this);
             ListaPanel[0].setBounds(0, 0, 800, 600);
-            ListaPanel[0].setVisible(false);
+            ListaPanel[0].setVisible(true);
             add(ListaPanel[0]);
 
             ListaPanel[1]=new Login(800,600,this);
@@ -67,8 +67,18 @@ public class Main {
             
             ListaPanel[2]=new Registrar(800,600,this);
             ListaPanel[2].setBounds(0, 0, 800, 600);
-            ListaPanel[2].setVisible(true);
+            ListaPanel[2].setVisible(false);
             add(ListaPanel[2]);
+
+            ListaPanel[3]=new SeleccionarOperacion(800,600,this);
+            ListaPanel[3].setBounds(0, 0, 800, 600);
+            ListaPanel[3].setVisible(false);
+            add(ListaPanel[3]);
+
+            ListaPanel[4]=new EscogerTicket(800,600,this);
+            ListaPanel[4].setBounds(0, 0, 800, 600);
+            ListaPanel[4].setVisible(false);
+            add(ListaPanel[4]);
 
             
         }
@@ -107,5 +117,4 @@ public class Main {
         Princip.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         Princip.setResizable(false);
     }
-
 }

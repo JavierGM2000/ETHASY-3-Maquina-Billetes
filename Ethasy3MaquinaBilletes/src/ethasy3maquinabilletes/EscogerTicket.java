@@ -1,6 +1,8 @@
 
 package ethasy3maquinabilletes;
 
+import ethasy3maquinabilletes.Main.GeneralPanel;
+import ethasy3maquinabilletes.Main.VentanaPrincipal;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.ItemSelectable;
@@ -26,23 +28,24 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 
-public class EscogerTicket extends JFrame implements ActionListener{
+public class EscogerTicket extends GeneralPanel{
     private JComboBox lineaComboBox,horaComboBox;
     private JLabel lineaLabel,salidaLabel,llegadaLabel,diaLabel,horaLabel;
     private JTextArea diaTextArea;
     private JScrollPane salidaScroll,llegadaScroll;
     private JButton volver;
     private JPanel SalidasPanel,LlegadasPanel;
-    
+    private VentanaPrincipal Padre;
     ArrayList<JButton> BotonesSalida = new ArrayList();
     ArrayList<JButton> BotonesLlegada = new ArrayList();
     
-        String url="jdbc:mysql://localhost:3306/reto3db";
+        
         Connection mycon;
  
-         EscogerTicket() throws SQLException, ClassNotFoundException
+         EscogerTicket(int w,int h,VentanaPrincipal Parent) throws SQLException, ClassNotFoundException
         {
-           mycon = DriverManager.getConnection(url, "root", "");
+             Padre=Parent;
+           mycon = Parent.mycon;
          
            
           setLayout(null);
@@ -113,6 +116,7 @@ public class EscogerTicket extends JFrame implements ActionListener{
           
           volver=new JButton("Volver");
           volver.setBounds(670, 500, 100, 50);
+          volver.addActionListener(this);
           add(volver);
                
           horaComboBox= new JComboBox();
@@ -147,11 +151,17 @@ public class EscogerTicket extends JFrame implements ActionListener{
      }
      
      
+    @Override
       public void actionPerformed(ActionEvent e){
-      
+
+        if(e.getSource()==volver)
+        {
+            Padre.PanelChanger(4,2);
+        }
+
         if(e.getSource()==lineaComboBox){ 
         try {
-        mycon = DriverManager.getConnection(url, "root", "");
+        //mycon = DriverManager.getConnection(url, "root", "");
         Statement mysts= mycon.createStatement();  
         String selectSalidas="SELECT p.Nombre\n" +
         "FROM parada p, linea l, linea_parada lp\n" +
@@ -236,16 +246,4 @@ public class EscogerTicket extends JFrame implements ActionListener{
          }
           
       }
-
-    
-    
-    public static void main(String[]args) throws SQLException, ClassNotFoundException {
-    EscogerTicket ej=new EscogerTicket();
-     ej.setBounds(0, 0, 800, 600);
-     ej.setVisible(true);
-     ej.setResizable(false);
-     ej.setLocationRelativeTo(null);
-    }
-
-
 }

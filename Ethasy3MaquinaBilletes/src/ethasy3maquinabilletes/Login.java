@@ -183,6 +183,7 @@ public class Login extends GeneralPanel
                         return;
                     }
                     SetError(7);
+                    Padre.PanelChanger(1, 3);
 
                 } catch (SQLException ex) {
                     
