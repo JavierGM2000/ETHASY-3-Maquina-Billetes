@@ -5,7 +5,7 @@
 
 package ethasy3maquinabilletes;
 
-import com.mysql.jdbc.Statement;
+
 import ethasy3maquinabilletes.Main.GeneralPanel;
 import ethasy3maquinabilletes.Main.VentanaPrincipal;
 import java.awt.Color;
