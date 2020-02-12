@@ -67,8 +67,14 @@ public class Main {
             
             ListaPanel[2]=new Registrar(800,600,this);
             ListaPanel[2].setBounds(0, 0, 800, 600);
-            ListaPanel[2].setVisible(true);
+            ListaPanel[2].setVisible(false);
             add(ListaPanel[2]);
+            
+                    
+            ListaPanel[5]=new EscogerTicket(800,600,this);
+            ListaPanel[5].setBounds(0, 0, 800, 600);
+            ListaPanel[5].setVisible(true);
+            add(ListaPanel[5]);
 
             
         }

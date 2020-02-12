@@ -1,6 +1,7 @@
 
 package ethasy3maquinabilletes;
 
+import ethasy3maquinabilletes.Main.GeneralPanel;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.ItemSelectable;
@@ -13,7 +14,11 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
@@ -26,21 +31,23 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 
-public class EscogerTicket extends JFrame implements ActionListener{
-    private JComboBox lineaComboBox,horaComboBox;
-    private JLabel lineaLabel,salidaLabel,llegadaLabel,diaLabel,horaLabel;
-    private JTextArea diaTextArea;
+
+public class EscogerTicket extends GeneralPanel {
+    private JComboBox lineaComboBox,horaComboBox,diaComboBox;
+    private JLabel lineaLabel,salidaLabel,llegadaLabel,diaLabel,horaLabel,numeroAutobusLabel,plazasLibresLabel;
     private JScrollPane salidaScroll,llegadaScroll;
-    private JButton volver;
+    private JButton volver,continuar;
     private JPanel SalidasPanel,LlegadasPanel;
+    private int currentPos;
+   
     
     ArrayList<JButton> BotonesSalida = new ArrayList();
     ArrayList<JButton> BotonesLlegada = new ArrayList();
     
-        String url="jdbc:mysql://localhost:3306/reto3db";
+        String url="jdbc:mysql://localhost:3306/ethasy3test";
         Connection mycon;
  
-         EscogerTicket() throws SQLException, ClassNotFoundException
+         EscogerTicket(int w,int h,Main.VentanaPrincipal Parent) throws SQLException, ClassNotFoundException
         {
            mycon = DriverManager.getConnection(url, "root", "");
          
@@ -100,50 +107,62 @@ public class EscogerTicket extends JFrame implements ActionListener{
           llegadaScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
           add(llegadaScroll);
           
-          diaTextArea= new JTextArea("");
-          diaTextArea.setBounds(300, 230, 200, 250);
-          add(diaTextArea); 
-          diaTextArea.setEditable(false);
+          diaComboBox= new JComboBox();
+          diaComboBox.setBounds(350, 260, 100, 30);
+            
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = new Date();
+            Calendar calendario = Calendar.getInstance();
+            calendario.setTime(date);
+          
+             calendario.add(Calendar.DATE, 0);  
+             Date diaHoy = calendario.getTime();
+             diaComboBox.addItem(dateFormat.format(diaHoy));  
+             
+            for(int i=0;i<14;i++){
+              
+              calendario.add(Calendar.DATE, 1);  
+              Date diaDespues = calendario.getTime();
+              diaComboBox.addItem(dateFormat.format(diaDespues));  
+
+            }
+          diaComboBox.addActionListener(this);
+          add(diaComboBox);
           
           
+        
           diaLabel= new JLabel("Día:");
-          diaLabel.setBounds(300, 100, 200, 200);
+          diaLabel.setBounds(290, 175, 200, 200);
           diaLabel.setFont (diaLabel.getFont ().deriveFont (20f));
           add(diaLabel); 
           
           volver=new JButton("Volver");
-          volver.setBounds(670, 500, 100, 50);
+          volver.setBounds(50, 500, 100, 50);
           add(volver);
+          
+          continuar=new JButton("Continuar");
+          continuar.setBounds(650, 500, 100, 50);
+          add(continuar);
                
           horaComboBox= new JComboBox();
-          horaComboBox.setBounds(370, 510, 100, 30);
-          horaComboBox.addItem("8:00");
-          horaComboBox.addItem("9:00");
-          horaComboBox.addItem("10:00");
-          horaComboBox.addItem("11:00");
-          horaComboBox.addItem("12:00");
-          horaComboBox.addItem("13:00");
-          horaComboBox.addItem("14:00");
-          horaComboBox.addItem("15:00");
-          horaComboBox.addItem("16:00");
-          horaComboBox.addItem("17:00");
-          horaComboBox.addItem("18:00");
-          horaComboBox.addItem("19:00");
-          horaComboBox.addItem("20:00");
-          horaComboBox.addItem("21:00");
-          horaComboBox.addItem("22:00");
-          horaComboBox.addItem("23:00");
-          horaComboBox.addItem("24:00");
+          horaComboBox.setBounds(350, 340, 100, 30);
+          horaComboBox.addActionListener(this);
           add(horaComboBox);
           
           horaLabel= new JLabel("Hora:");
-          horaLabel.setBounds(300, 510, 100, 30);
+          horaLabel.setBounds(290, 340, 100, 30);
           horaLabel.setFont (horaLabel.getFont ().deriveFont (20f));
           add(horaLabel); 
           
+          numeroAutobusLabel= new JLabel("Número Autobus:");
+          numeroAutobusLabel.setBounds(290, 420, 200, 30);
+          numeroAutobusLabel.setFont (numeroAutobusLabel.getFont ().deriveFont (20f));
+          add(numeroAutobusLabel);
           
-          
-          
+          plazasLibresLabel= new JLabel("Plazas libres:");
+          plazasLibresLabel.setBounds(290, 460, 200, 30);
+          plazasLibresLabel.setFont (plazasLibresLabel.getFont ().deriveFont (20f));
+          add(plazasLibresLabel);
      }
      
      
@@ -154,9 +173,9 @@ public class EscogerTicket extends JFrame implements ActionListener{
         mycon = DriverManager.getConnection(url, "root", "");
         Statement mysts= mycon.createStatement();  
         String selectSalidas="SELECT p.Nombre\n" +
-        "FROM parada p, linea l, linea_parada lp\n" +
-        "WHERE p.Cod_Parada=lp.Cod_Parada AND l.Cod_Linea=lp.Cod_Linea\n" +
-        "AND l.Nombre=\'"+lineaComboBox.getSelectedItem()+"\'ORDER BY lp.Num_Parada";
+        "FROM parada p,linea_parada lp,linea l\n" +
+        "WHERE p.CodParad=lp.CodParad AND lp.CodLinea=l.CodLinea\n" +
+        "AND l.Nombre=\'"+lineaComboBox.getSelectedItem()+"\'ORDER BY lp.posicion";
         
         ResultSet resSelectSalidas = mysts.executeQuery(selectSalidas);
        
@@ -206,22 +225,69 @@ public class EscogerTicket extends JFrame implements ActionListener{
         
         }
                
-       
+         
+         
+         
          for(int x=0;x<BotonesSalida.size();x++){
             
-           if(e.getSource()==BotonesSalida.get(x)){
+          
                
-               for(int y=0;y<BotonesSalida.size();y++){
-                   
-                   BotonesSalida.get(y).setBackground(null);
-                  
-               }
-               BotonesSalida.get(x).setBackground(Color.yellow);
-                 
+           if(e.getSource()==BotonesSalida.get(x)){
+                
+                
+                for(int z=0;z<BotonesLlegada.size();z++){
+                BotonesLlegada.get(z).setBackground(null);
+                BotonesLlegada.get(z).setVisible(true);   
+                }
+                
+                horaComboBox.removeActionListener(this);
+                horaComboBox.removeAllItems();
+                horaComboBox.addActionListener(this);
+                
+               
+                   try {
+                     
+                       for(int y=0;y<BotonesSalida.size();y++){
+                           
+                           BotonesSalida.get(y).setBackground(null);
+                           
+                       }
+                       
+                       
+                      
+                       BotonesSalida.get(x).setBackground(Color.yellow);
+                       LlegadasPanel.remove(BotonesSalida.get(x));
+                       BotonesLlegada.get(x).setVisible(false);
+                      
+                       
+                       currentPos=x;
+                       Statement mystsHora= mycon.createStatement();
+                       String sqlHora="SELECT r.HoraSalida\n" +
+                               "FROM recorridos r,autobus a,linea l\n" +
+                               "WHERE r.CodAutobus=a.CodBus AND l.CodLinea=a.CodLinea\n" +
+                               "AND l.Nombre=\'"+lineaComboBox.getSelectedItem()+"\' AND r.Dia=\'"+diaComboBox.getSelectedItem()+"\' ORDER BY HoraSalida";
+                       ResultSet rsHora = mystsHora.executeQuery(sqlHora);
+                       while(rsHora.next())
+                           
+                       {
+                           int minutos_total=rsHora.getInt("HoraSalida");
+                           minutos_total+=5*x;
+                           int horas=minutos_total/60;
+                           int minutos=minutos_total-(horas*60);
+                           if(minutos>=10)
+                               horaComboBox.addItem(String.valueOf(horas)+':'+String.valueOf(minutos));
+                           else if(minutos>0)
+                               horaComboBox.addItem(String.valueOf(horas)+":0"+String.valueOf(minutos));
+                           else
+                               horaComboBox.addItem(String.valueOf(horas)+":00");
+                       }      } catch (SQLException ex) {
+                       Logger.getLogger(EscogerTicket.class.getName()).log(Level.SEVERE, null, ex);
+                   }
+              
              }
         
          }
-         
+           
           for(int x=0;x<BotonesLlegada.size();x++){
                
            if(e.getSource()==BotonesLlegada.get(x)){
@@ -230,22 +296,62 @@ public class EscogerTicket extends JFrame implements ActionListener{
                    BotonesLlegada.get(y).setBackground(null);
                }
                BotonesLlegada.get(x).setBackground(Color.yellow);
-                 
+              
              }
         
          }
+          
+          
+        if(e.getSource()==horaComboBox){ 
+                int char_pos=horaComboBox.getSelectedItem().toString().indexOf(":");
+                int horas=Integer.parseInt(horaComboBox.getSelectedItem().toString().substring(0, char_pos))*60;
+                int mins=Integer.parseInt(horaComboBox.getSelectedItem().toString().substring(char_pos+1));
+                int totalmins=horas+mins-(5*currentPos);
+                
+            try {
+               
+                Statement mystsAutobus= mycon.createStatement();
+                String sqlAutobus="SELECT CodAutobus FROM recorridos,autobus,linea WHERE recorridos.CodAutobus=autobus.CodBus AND autobus.CodLinea=linea.CodLinea AND recorridos.Dia=\'"+diaComboBox.getSelectedItem()+"\' AND recorridos.HoraSalida="+(totalmins)+" AND linea.Nombre=\'"+lineaComboBox.getSelectedItem()+"\'";  
+                ResultSet rsAutobus = mystsAutobus.executeQuery(sqlAutobus);
+                 while(rsAutobus.next())
+                       {
+                numeroAutobusLabel.setText("Número Autobus: "+rsAutobus.getString("CodAutobus"));
+                       }
+                     
+            } catch (SQLException ex) {
+                Logger.getLogger(EscogerTicket.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            try {
+                Statement mystsPlazas= mycon.createStatement();
+                String sqlPlazas="SELECT Plazas-PlazasOcupadas FROM recorridos,autobus,linea WHERE recorridos.CodAutobus=autobus.CodBus AND autobus.CodLinea=linea.CodLinea AND recorridos.Dia=\'"+diaComboBox.getSelectedItem()+"\' AND recorridos.HoraSalida="+(totalmins)+" AND linea.Nombre=\'"+lineaComboBox.getSelectedItem()+"\'";  
+                ResultSet rsPlazas = mystsPlazas.executeQuery(sqlPlazas);
+                 while(rsPlazas.next())
+                       {
+                plazasLibresLabel.setText("Plazas libres: "+rsPlazas.getString("Plazas-PlazasOcupadas"));
+                       }
+                     
+            } catch (SQLException ex) {
+                Logger.getLogger(EscogerTicket.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            
+        }
+        
+        
           
       }
 
     
     
-    public static void main(String[]args) throws SQLException, ClassNotFoundException {
+    /*public static void main(String[]args) throws SQLException, ClassNotFoundException {
     EscogerTicket ej=new EscogerTicket();
      ej.setBounds(0, 0, 800, 600);
      ej.setVisible(true);
      ej.setResizable(false);
      ej.setLocationRelativeTo(null);
-    }
+     ej.setDefaultCloseOperation(EXIT_ON_CLOSE);
+    }*/
 
 
 }
