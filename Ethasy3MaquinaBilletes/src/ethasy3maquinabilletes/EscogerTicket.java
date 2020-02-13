@@ -21,7 +21,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.scene.control.CheckBox;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -39,7 +41,8 @@ public class EscogerTicket extends GeneralPanel {
     private JButton volver,continuar;
     private JPanel SalidasPanel,LlegadasPanel;
     private int currentPos;
-   
+    private JCheckBox checkboxIdaVuelta;
+    
     
     ArrayList<JButton> BotonesSalida = new ArrayList();
     ArrayList<JButton> BotonesLlegada = new ArrayList();
@@ -66,6 +69,11 @@ public class EscogerTicket extends GeneralPanel {
           
           add(lineaComboBox);
           lineaComboBox.addActionListener(this);
+          
+  
+          checkboxIdaVuelta= new JCheckBox("¿Quieres que el viaje sea de Ida y Vuelta?");
+          checkboxIdaVuelta.setBounds(180,130,350,30);
+          add(checkboxIdaVuelta);
           
           lineaLabel= new JLabel("Linea:");
           lineaLabel.setBounds(180,40,80,20);
