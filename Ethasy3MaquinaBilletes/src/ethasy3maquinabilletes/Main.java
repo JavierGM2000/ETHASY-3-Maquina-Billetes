@@ -78,7 +78,7 @@ public class Main {
             //this.setBounds(0, 0, 600, 800);
             ListaPanel[0]=new BienvenidaVentana(800,600,this);
             ListaPanel[0].setBounds(0, 0, 800, 600);
-            ListaPanel[0].setVisible(false);
+            ListaPanel[0].setVisible(true);
             add(ListaPanel[0]);
 
             ListaPanel[1]=new Login(800,600,this);
@@ -94,7 +94,7 @@ public class Main {
                     
             ListaPanel[5]=new EscogerTicket(800,600,this);
             ListaPanel[5].setBounds(0, 0, 800, 600);
-            ListaPanel[5].setVisible(true);
+            ListaPanel[5].setVisible(false);
             add(ListaPanel[5]);
 
             ListaPanel[3]=new SeleccionarOperacion(800,600,this);
@@ -109,7 +109,7 @@ public class Main {
 
             ListaPanel[6]=new VentanaPagar(800,600,this);
             ListaPanel[6].setBounds(0, 0, 800, 600);
-            ListaPanel[6].setVisible(true);
+            ListaPanel[6].setVisible(false);
             add(ListaPanel[6]);
 
             
