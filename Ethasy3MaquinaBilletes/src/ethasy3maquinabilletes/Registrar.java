@@ -9,6 +9,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import javax.swing.*;
@@ -38,8 +39,11 @@ public class Registrar extends GeneralPanel
         JRadioButton radio1,radio2,radio3;
         ButtonGroup bg;
         JButton Registro, Volver;
+        ArrayList<String> LogOut;
         Registrar(int w,int h,VentanaPrincipal Parent)
         {
+            LogOut = new ArrayList();
+
             Padre = Parent;
             setLayout(null);
 
@@ -383,7 +387,17 @@ public class Registrar extends GeneralPanel
                             inAno.getText()+'-'+inmes.getText()+'-'+inDia.getText()+"\',\'"+String.valueOf(inPass1.getPassword())+"\');";
                     mysts.execute(sql);
 
-
+                    LogOut.add("REGISTRO USUARIO");
+                    LogOut.add("DNI:"+inDNI.getText());
+                    LogOut.add("Nombre:"+inNombre.getText());
+                    LogOut.add("Apellido1:"+inApellido1.getText());
+                    LogOut.add("Apellido2:"+inApellido2.getText());
+                    LogOut.add("Genero:"+Sexo);
+                    LogOut.add("FechaNac:"+ inAno.getText()+'-'+inmes.getText()+'-'+inDia.getText());
+                    Padre.LogThing(LogOut);
+                    LogOut.clear();
+                    JOptionPane.showMessageDialog(null, "Usuario registrado correctamente");
+                    Padre.PanelChanger(2, 1);
 
                 } catch (SQLException ex) {
                     

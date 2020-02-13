@@ -5,15 +5,16 @@ import ethasy3maquinabilletes.Main.GeneralPanel;
 import ethasy3maquinabilletes.Main.VentanaPrincipal;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 
 public class SeleccionarOperacion extends GeneralPanel{
-   
+    private JLabel imgfondo;
      private JButton consultar,comprar,logout;
-     private JLabel seleccioneOperacion;
+     private JLabel seleccioneOperacion,Bienvenido;
       private VentanaPrincipal Padre;
      public SeleccionarOperacion(int w,int h,VentanaPrincipal Parent){
              
@@ -24,6 +25,11 @@ public class SeleccionarOperacion extends GeneralPanel{
            seleccioneOperacion.setBounds(90,-10,650,250);
            seleccioneOperacion.setFont (seleccioneOperacion.getFont ().deriveFont (30f));
            add(seleccioneOperacion);
+
+           Bienvenido= new JLabel("Bienvenido");
+           Bienvenido.setBounds(10,10,600,40);
+           Bienvenido.setFont (Bienvenido.getFont ().deriveFont (30f));
+           add(Bienvenido);
            
           //Consultar
            consultar=new JButton("Consultar tus tickets");
@@ -41,11 +47,19 @@ public class SeleccionarOperacion extends GeneralPanel{
            
            //logout
            logout=new JButton("Logout");
-           logout.setBounds(550,20,120,50);
+           logout.setBounds(600,20,120,50);
            logout.addActionListener(this);
            add(logout);
            
-           
+            ImageIcon fondo=ethasy3maquinabilletes.Main.ResizeImage("img\\FondoSeleccion.png",w,h);
+            imgfondo=new JLabel(fondo);
+            imgfondo.setBounds(0, 0, 800, 600);
+            add(imgfondo);
+    }
+
+     public void setBienvenida(Cliente Client)
+    {
+        Bienvenido.setText("Bienvenido:"+Client.Nombre+" "+Client.Apellido1+" "+ Client.Apellido2);
     }
 
     @Override
