@@ -40,10 +40,9 @@ public class EscogerTicket extends GeneralPanel {
     private JScrollPane salidaScroll,llegadaScroll;
     private JButton volver,continuar;
     private JPanel SalidasPanel,LlegadasPanel;
-    private int currentPos;
+    private int currentPos,codLlegada,codSalida;
     private JCheckBox checkboxIdaVuelta;
-    private VentanaPrincipal Padre;
-    
+    private String nombreSalida,nombreLlegada;
     
     ArrayList<JButton> BotonesSalida = new ArrayList();
     ArrayList<JButton> BotonesLlegada = new ArrayList();
@@ -271,10 +270,28 @@ public class EscogerTicket extends GeneralPanel {
                        }
                        
                        
-                      
+                       nombreSalida=BotonesSalida.get(x).getText();
+        
                        BotonesSalida.get(x).setBackground(Color.yellow);
                        LlegadasPanel.remove(BotonesSalida.get(x));
                        BotonesLlegada.get(x).setVisible(false);
+                       
+                       try {    
+                  
+                   Statement mystsSalida= mycon.createStatement();
+                   String sqlSalida="SELECT parada.CodParad\n" +
+                    "FROM parada\n" +
+                    "WHERE parada.Nombre=\'"+nombreLlegada+"\'";
+                   ResultSet rsSalida= mystsSalida.executeQuery(sqlSalida);
+                  
+                    while(rsSalida.next())
+                    {
+                     codSalida=rsSalida.getInt("CodParad");
+                    }
+                   
+               } catch (SQLException ex) {
+                   Logger.getLogger(EscogerTicket.class.getName()).log(Level.SEVERE, null, ex);
+               }
                       
                        
                        currentPos=x;
@@ -309,10 +326,29 @@ public class EscogerTicket extends GeneralPanel {
                
            if(e.getSource()==BotonesLlegada.get(x)){
                
-               for(int y=0;y<BotonesLlegada.size();y++){
-                   BotonesLlegada.get(y).setBackground(null);
+               
+                   for(int y=0;y<BotonesLlegada.size();y++){
+                       BotonesLlegada.get(y).setBackground(null);
+                       
+                   }
+                   BotonesLlegada.get(x).setBackground(Color.yellow);
+                   nombreLlegada=BotonesLlegada.get(x).getText();
+               try {    
+                  
+                   Statement mystsLlegada= mycon.createStatement();
+                   String sqlLlegada="SELECT parada.CodParad\n" +
+                    "FROM parada\n" +
+                    "WHERE parada.Nombre=\'"+nombreLlegada+"\'";
+                   ResultSet rsLlegada= mystsLlegada.executeQuery(sqlLlegada);
+                  
+                    while(rsLlegada.next())
+                    {
+                     codLlegada=rsLlegada.getInt("CodParad");
+                    }
+                   
+               } catch (SQLException ex) {
+                   Logger.getLogger(EscogerTicket.class.getName()).log(Level.SEVERE, null, ex);
                }
-               BotonesLlegada.get(x).setBackground(Color.yellow);
               
              }
         
