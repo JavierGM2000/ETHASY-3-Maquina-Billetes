@@ -12,6 +12,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import javax.swing.*;
 
@@ -35,9 +36,11 @@ public class Login extends GeneralPanel
         JButton Login,Registrar,Volver;
         VentanaPrincipal Padre;
         JLabel Error;
+        ArrayList<String> LogOut;
 
         Login(int w,int h,VentanaPrincipal Parent)
         {
+            LogOut = new ArrayList();
             Padre = Parent;
             setLayout(null);
             this.setBackground(Color.WHITE);
@@ -183,6 +186,11 @@ public class Login extends GeneralPanel
                         return;
                     }
                     SetError(7);
+                    LogOut.add("LOGIN DE USUARIO");
+                    LogOut.add(inDNI.getText());
+                    Padre.LogThing(LogOut);
+                    LogOut.clear();
+                    Padre.setCliente(new Cliente(Padre,inDNI.getText()));
                     Padre.PanelChanger(1, 3);
 
                 } catch (SQLException ex) {
