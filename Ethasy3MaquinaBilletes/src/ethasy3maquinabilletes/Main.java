@@ -94,7 +94,7 @@ public class Main {
                     
             ListaPanel[5]=new EscogerTicket(800,600,this);
             ListaPanel[5].setBounds(0, 0, 800, 600);
-            ListaPanel[5].setVisible(true);
+            ListaPanel[5].setVisible(false);
             add(ListaPanel[5]);
 
             ListaPanel[3]=new SeleccionarOperacion(800,600,this);
@@ -104,12 +104,12 @@ public class Main {
 
             ListaPanel[4]=new EscogerTicket(800,600,this);
             ListaPanel[4].setBounds(0, 0, 800, 600);
-            ListaPanel[4].setVisible(false);
+            ListaPanel[4].setVisible(true);
             add(ListaPanel[4]);
 
             ListaPanel[6]=new VentanaPagar(800,600,this);
             ListaPanel[6].setBounds(0, 0, 800, 600);
-            ListaPanel[6].setVisible(true);
+            ListaPanel[6].setVisible(false);
             add(ListaPanel[6]);
 
             
