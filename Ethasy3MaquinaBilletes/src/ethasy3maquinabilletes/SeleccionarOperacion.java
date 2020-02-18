@@ -3,12 +3,14 @@ package ethasy3maquinabilletes;
 
 import ethasy3maquinabilletes.Main.GeneralPanel;
 import ethasy3maquinabilletes.Main.VentanaPrincipal;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+
 
 
 public class SeleccionarOperacion extends GeneralPanel{
@@ -24,11 +26,12 @@ public class SeleccionarOperacion extends GeneralPanel{
            seleccioneOperacion= new JLabel("Seleccione la operación que desee hacer:");
            seleccioneOperacion.setBounds(90,-10,650,250);
            seleccioneOperacion.setFont (seleccioneOperacion.getFont ().deriveFont (30f));
+           Font font = new Font("Courier", Font.PLAIN,30);
            add(seleccioneOperacion);
 
            Bienvenido= new JLabel("Bienvenido");
            Bienvenido.setBounds(10,10,600,40);
-           Bienvenido.setFont (Bienvenido.getFont ().deriveFont (30f));
+           Bienvenido.setFont(font);
            add(Bienvenido);
            
           //Consultar

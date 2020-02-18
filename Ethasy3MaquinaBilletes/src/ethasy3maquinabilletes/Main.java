@@ -16,6 +16,7 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
+import java.nio.charset.Charset;
 import javax.imageio.ImageIO;
 import java.sql.*;
 import java.util.Arrays;
@@ -33,6 +34,19 @@ public class Main {
                                 'x','b','n','j','z','s','q','v','h',
                                 'l','c','k','e'};
     static int DiasMes[] = new int[]{31,28,31,30,31,30,31,30,31,30,31};
+
+    static public String CodificarPassword(String orgPassword)
+    {
+        char[] Lista= orgPassword.toCharArray();
+        int length= orgPassword.length();
+        char firstchar= (char) Math.abs((orgPassword.charAt(0) - 'A'));
+        for(int i = 0;i<length;i++)
+        {
+            Lista[i]-=firstchar;
+        }
+
+        return String.valueOf(Lista);
+    }
 
     public static ImageIcon ResizeImage(String Path, int width, int height)
     {
@@ -61,13 +75,14 @@ public class Main {
         private float cobrar;
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         FileWriter MyLog;
-        String url="jdbc:mysql://localhost:3306/ethasy3test";
+        String url="jdbc:mysql://localhost:3306/ethasy3test?useUnicode=true&amp;characterEncoding=utf8";
         Connection mycon;
         GeneralPanel[] ListaPanel= new GeneralPanel[8];
         VentanaPrincipal() throws SQLException, ClassNotFoundException, IOException
         {
             mycon = DriverManager.getConnection(url, "root", "");
             Date fecha= new Date();
+           // CalcularTiempoPorLine(fecha);
             /*for(int i=0;i<14;i++)
             {
             CalcularTiempoPorLine(fecha);
@@ -104,7 +119,7 @@ public class Main {
 
             ListaPanel[4]=new EscogerTicket(800,600,this);
             ListaPanel[4].setBounds(0, 0, 800, 600);
-            ListaPanel[4].setVisible(true);
+            ListaPanel[4].setVisible(false);
             add(ListaPanel[4]);
 
             ListaPanel[6]=new VentanaPagar(800,600,this);
@@ -133,15 +148,16 @@ public class Main {
             int t_paradas=5;
             int max_lim=24*60;
             int tiempo;
+            int isVuelta=0;
             Statement mysts2 = mycon.createStatement();
             Statement mysts = mycon.createStatement();
-            String sql = "select CodLinea,count(*)*"+t_paradas+" as Mins from linea_parada group by CodLinea;";
+            String sql = "select CodLinea,count(*)*"+t_paradas+",count(*)*"+((t_paradas*2)-1)+" as Mins from linea_parada group by CodLinea;";
             ResultSet rs = mysts2.executeQuery(sql);
             ResultSet rs2;
             ResultSet rs3;
             int codRecor=1;
             String consulta="INSERT INTO recorridos"
-                       + " values (?,?,?,?,0);";
+                       + " values (?,?,?,?,0,?);";
             PreparedStatement sentencia= mycon.prepareStatement(consulta);
             while(rs.next())
             {
@@ -156,16 +172,27 @@ public class Main {
                 int current_bus=1;
                 while(rs2.next())
                 {
-                    
+                    isVuelta=0;
                     int veces=(max_lim-(hora_inicio+30*((current_bus)-1)))/rs.getInt(2);
                     for(int x=0;x<veces;x++)
                     {
                     sentencia.setString(1, String.valueOf(codRecor++));
                     sentencia.setString(2, String.valueOf(rs2.getInt(1)));
                     sentencia.setString(3, formattter.format(date));
-                    sentencia.setString(4, String.valueOf(((hora_inicio+30*((current_bus)-1)))+rs.getInt(2)*x));
+                    sentencia.setString(4, String.valueOf(((hora_inicio+30*((current_bus)-1)))+rs.getInt(3)*x));
+                    sentencia.setString(5, String.valueOf(0));
+                    sentencia.executeUpdate();
+
+                    sentencia.setString(1, String.valueOf(codRecor++));
+                    sentencia.setString(2, String.valueOf(rs2.getInt(1)));
+                    sentencia.setString(3, formattter.format(date));
+                    sentencia.setString(4, String.valueOf((((hora_inicio+30*((current_bus)-1)))+rs.getInt(3)*x)+rs.getInt(2)));
+                    sentencia.setString(5, String.valueOf(1));
                     sentencia.executeUpdate();
                     }
+
+
+
                     current_bus++;
                 }
 

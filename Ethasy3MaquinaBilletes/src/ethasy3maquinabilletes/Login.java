@@ -180,7 +180,7 @@ public class Login extends GeneralPanel
                         SetError(5);
                         return;
                     }
-                    if(!Arrays.equals(rs.getString(3).toCharArray(), inPSWD.getPassword()))
+                    if(!Arrays.equals(rs.getString(3).toCharArray(),Main.CodificarPassword(String.valueOf(inPSWD.getPassword())).toCharArray()))
                     {
                         SetError(6);
                         return;
