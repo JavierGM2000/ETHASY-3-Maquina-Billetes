@@ -2,6 +2,7 @@
 package ethasy3maquinabilletes;
 
 import ethasy3maquinabilletes.Main.GeneralPanel;
+import ethasy3maquinabilletes.Main.VentanaPrincipal;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.ItemSelectable;
@@ -22,7 +23,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.scene.control.CheckBox;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -59,7 +59,7 @@ public class EscogerTicket extends GeneralPanel {
          EscogerTicket(int w,int h,Main.VentanaPrincipal Parent) throws SQLException, ClassNotFoundException
         {
            mycon = DriverManager.getConnection(url, "root", "");
-         
+         Padre = Parent;
            
           setLayout(null);
           
@@ -157,6 +157,7 @@ public class EscogerTicket extends GeneralPanel {
           
           continuar=new JButton("Continuar");
           continuar.setBounds(650, 500, 100, 50);
+          continuar.addActionListener(this);
           add(continuar);
                
           horaComboBox= new JComboBox();
@@ -182,7 +183,14 @@ public class EscogerTicket extends GeneralPanel {
      
      
       public void actionPerformed(ActionEvent e){
-      
+
+        if(e.getSource()==continuar)
+        {
+            Billete MyBil=new Billete(Padre,Padre.getCliente().DNI,new Date(),diaComboBox.getSelectedItem().toString()+horaComboBox.getSelectedItem().toString(),
+                    "ave del paraiso","Donde murio carrero",10,1,1);
+            MyBil.imprimirTicket();
+        }
+
         if(e.getSource()==lineaComboBox){ 
         codLinea=CodigosLineas.get(lineaComboBox.getSelectedIndex());
             

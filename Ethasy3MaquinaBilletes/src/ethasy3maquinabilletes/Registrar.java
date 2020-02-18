@@ -384,7 +384,7 @@ public class Registrar extends GeneralPanel
                     sql = "INSERT INTO CLIENTE(DNI,Nombre,Apellido,Apellido2,Sexo,FechaNac,Contra)"
                             + "VALUES (\'"+inDNI.getText()+"\',\'"+inNombre.getText()+"\',\'"+inApellido1.getText()
                             + "\',\'"+inApellido2.getText()+"\',\'"+Sexo+"\',\'"+
-                            inAno.getText()+'-'+inmes.getText()+'-'+inDia.getText()+"\',\'"+String.valueOf(inPass1.getPassword())+"\');";
+                            inAno.getText()+'-'+inmes.getText()+'-'+inDia.getText()+"\',\'"+Main.CodificarPassword(String.valueOf(inPass1.getPassword()))+"\');";
                     mysts.execute(sql);
 
                     LogOut.add("REGISTRO USUARIO");
