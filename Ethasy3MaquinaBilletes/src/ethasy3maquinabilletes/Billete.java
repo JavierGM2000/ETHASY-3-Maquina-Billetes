@@ -107,7 +107,7 @@ VentanaPrincipal Padre;
             Long2 =rsLatLon.getDouble(2);
             double distancia= calcularDistancia((float)Lat1, (float)Long2, (float)Lat2, (float)Long2);
             double consumo;
-            sql= "SELECT Consumo FROM autobus where CodParad=?";
+            sql= "SELECT Consumo FROM autobus where CodBus=?";
             mysts = Padre.mycon.prepareStatement(sql);
             mysts.setString(1, String.valueOf(NumBus));
             rsLatLon= mysts.executeQuery();

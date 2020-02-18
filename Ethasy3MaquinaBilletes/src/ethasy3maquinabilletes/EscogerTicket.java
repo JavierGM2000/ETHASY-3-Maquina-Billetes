@@ -41,16 +41,19 @@ public class EscogerTicket extends GeneralPanel {
     private JScrollPane salidaScroll,llegadaScroll;
     private JButton volver,continuar;
     private JPanel SalidasPanel,LlegadasPanel;
-    private int currentPos,codLlegada,codSalida,codLinea,posicionSalida,posicionLlegada,isVuelta;
+    private int currentPos,codLlegada,codSalida,codLinea,posicionSalida,posicionLlegada,isVuelta,codBus;
     private JCheckBox checkboxIdaVuelta;
     private String nombreSalida,nombreLlegada;
     private boolean pulsado=false;
+    private VentanaPrincipal Padre;
+    
     
     
     ArrayList<JButton> BotonesSalida = new ArrayList();
     ArrayList<JButton> BotonesLlegada = new ArrayList();
     ArrayList<Integer> CodigosParadas = new ArrayList();
     ArrayList<Integer> CodigosLineas = new ArrayList();
+    ArrayList<Integer> horasSalidaOrg = new ArrayList();
     
     
         String url="jdbc:mysql://localhost:3306/ethasy3test";
@@ -187,7 +190,8 @@ public class EscogerTicket extends GeneralPanel {
         if(e.getSource()==continuar)
         {
             Billete MyBil=new Billete(Padre,Padre.getCliente().DNI,new Date(),diaComboBox.getSelectedItem().toString()+horaComboBox.getSelectedItem().toString(),
-                    "ave del paraiso","Donde murio carrero",10,1,1);
+                    codSalida,codLlegada,10,codLinea,codBus);
+            MyBil.CalcularPrecio();
             MyBil.imprimirTicket();
         }
 
@@ -360,25 +364,50 @@ public class EscogerTicket extends GeneralPanel {
                                "WHERE r.CodAutobus=a.CodBus AND l.CodLinea=a.CodLinea\n" +
                                "AND l.Nombre=\'"+lineaComboBox.getSelectedItem()+"\' AND r.Dia=\'"+diaComboBox.getSelectedItem()+"\' AND isVuelta="+isVuelta+" ORDER BY HoraSalida";
                        ResultSet rsHora = mystsHora.executeQuery(sqlHora);
-                       while(rsHora.next())
-                           
+                       horasSalidaOrg.clear();
+                       if(isVuelta==0)
                        {
+                        while(rsHora.next())
+                        {
+
+                            int minutos_total=rsHora.getInt("HoraSalida");
+                            horasSalidaOrg.add(minutos_total);
+                            minutos_total+=5*(posicionSalida-1);
+                            int horas=minutos_total/60;
+                            int minutos=minutos_total-(horas*60);
+                            if(horas>24){
+                                horas-=24;
+                            }
+                            if(minutos>=10)
+                                horaComboBox.addItem(String.valueOf(horas)+':'+String.valueOf(minutos));
+                            else if(minutos>0)
+                                horaComboBox.addItem(String.valueOf(horas)+":0"+String.valueOf(minutos));
+                            else
+                                horaComboBox.addItem(String.valueOf(horas)+":00");
+                        } 
+                       }
+                       else if (isVuelta==1)
+                       {
+                        int totalParadas = CodigosParadas.size();
+                        while(rsHora.next())
+                        {
+                            int minutos_total=rsHora.getInt("HoraSalida");
+                            horasSalidaOrg.add(minutos_total);
+                            minutos_total+=5*(totalParadas-posicionSalida-1);
+                            int horas=minutos_total/60;
+                            int minutos=minutos_total-(horas*60);
+                            if(horas>24){
+                                horas-=24;
+                            }
+                            if(minutos>=10)
+                                horaComboBox.addItem(String.valueOf(horas)+':'+String.valueOf(minutos));
+                            else if(minutos>0)
+                                horaComboBox.addItem(String.valueOf(horas)+":0"+String.valueOf(minutos));
+                            else
+                                horaComboBox.addItem(String.valueOf(horas)+":00");
+                        }   
+                       }
                            
-                           int minutos_total=rsHora.getInt("HoraSalida");
-                           minutos_total+=5*(posicionSalida-1);
-                           int horas=minutos_total/60;
-                           int minutos=minutos_total-(horas*60);
-                           if(horas>24){
-                               horas-=24;
-                           }
-                           if(minutos>=10)
-                               horaComboBox.addItem(String.valueOf(horas)+':'+String.valueOf(minutos));
-                           else if(minutos>0)
-                               horaComboBox.addItem(String.valueOf(horas)+":0"+String.valueOf(minutos));
-                           else
-                               horaComboBox.addItem(String.valueOf(horas)+":00");
-                       } 
-                       
                        } catch (SQLException ex) {
                        Logger.getLogger(EscogerTicket.class.getName()).log(Level.SEVERE, null, ex);
                        }
@@ -403,30 +432,19 @@ public class EscogerTicket extends GeneralPanel {
             try {
                
                 Statement mystsAutobus= mycon.createStatement();
-                String sqlAutobus="SELECT CodAutobus FROM recorridos,autobus,linea WHERE recorridos.CodAutobus=autobus.CodBus AND autobus.CodLinea=linea.CodLinea AND recorridos.Dia=\'"+diaComboBox.getSelectedItem()+"\' AND recorridos.HoraSalida="+(totalmins)+" AND linea.Nombre=\'"+lineaComboBox.getSelectedItem()+"\'";  
+                String sqlAutobus="SELECT CodAutobus,Plazas-PlazasOcupadas FROM recorridos,autobus,linea WHERE recorridos.CodAutobus=autobus.CodBus AND autobus.CodLinea=linea.CodLinea AND recorridos.Dia=\'"+diaComboBox.getSelectedItem()+"\' AND recorridos.HoraSalida="+(horasSalidaOrg.get(horaComboBox.getSelectedIndex()))+" AND linea.Nombre=\'"+lineaComboBox.getSelectedItem()+"\' AND recorridos.isVuelta="+isVuelta;  
                 ResultSet rsAutobus = mystsAutobus.executeQuery(sqlAutobus);
                  while(rsAutobus.next())
                        {
+                codBus=rsAutobus.getInt("CodAutobus");           
                 numeroAutobusLabel.setText("Número Autobus: "+rsAutobus.getString("CodAutobus"));
+                plazasLibresLabel.setText("Plazas libres: "+rsAutobus.getString("Plazas-PlazasOcupadas"));
                        }
                      
             } catch (SQLException ex) {
                 Logger.getLogger(EscogerTicket.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
-            try {
-                Statement mystsPlazas= mycon.createStatement();
-                String sqlPlazas="SELECT Plazas-PlazasOcupadas FROM recorridos,autobus,linea WHERE recorridos.CodAutobus=autobus.CodBus AND autobus.CodLinea=linea.CodLinea AND recorridos.Dia=\'"+diaComboBox.getSelectedItem()+"\' AND recorridos.HoraSalida="+(totalmins)+" AND linea.Nombre=\'"+lineaComboBox.getSelectedItem()+"\'";  
-                ResultSet rsPlazas = mystsPlazas.executeQuery(sqlPlazas);
-                 while(rsPlazas.next())
-                       {
-                plazasLibresLabel.setText("Plazas libres: "+rsPlazas.getString("Plazas-PlazasOcupadas"));
-                       }
-                     
-            } catch (SQLException ex) {
-                Logger.getLogger(EscogerTicket.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            
+           
             
         }
         
