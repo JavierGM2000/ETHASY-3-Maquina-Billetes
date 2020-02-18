@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -40,12 +41,17 @@ public class EscogerTicket extends GeneralPanel {
     private JScrollPane salidaScroll,llegadaScroll;
     private JButton volver,continuar;
     private JPanel SalidasPanel,LlegadasPanel;
-    private int currentPos,codLlegada,codSalida;
+    private int currentPos,codLlegada,codSalida,codLinea,posicionSalida,posicionLlegada,isVuelta;
     private JCheckBox checkboxIdaVuelta;
     private String nombreSalida,nombreLlegada;
+    private boolean pulsado=false;
+    
     
     ArrayList<JButton> BotonesSalida = new ArrayList();
     ArrayList<JButton> BotonesLlegada = new ArrayList();
+    ArrayList<Integer> CodigosParadas = new ArrayList();
+    ArrayList<Integer> CodigosLineas = new ArrayList();
+    
     
         String url="jdbc:mysql://localhost:3306/ethasy3test";
         Connection mycon;
@@ -65,6 +71,7 @@ public class EscogerTicket extends GeneralPanel {
             while(rs.next())
             {
                lineaComboBox.addItem(rs.getString("Nombre"));
+               CodigosLineas.add(rs.getInt("CodLinea"));
             }
           
           add(lineaComboBox);
@@ -106,17 +113,17 @@ public class EscogerTicket extends GeneralPanel {
           LlegadasPanel.setBackground(Color.white);
          
           llegadaLabel= new JLabel("Llegada:");
-          llegadaLabel.setBounds(570, 100, 200, 200);
+          llegadaLabel.setBounds(270, 100, 200, 200);
           llegadaLabel.setFont (llegadaLabel.getFont ().deriveFont (20f));
           add(llegadaLabel);  
           
           llegadaScroll = new JScrollPane(LlegadasPanel);
-          llegadaScroll.setBounds(570, 230, 200, 250);
+          llegadaScroll.setBounds(270, 230, 200, 250);
           llegadaScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
           add(llegadaScroll);
           
           diaComboBox= new JComboBox();
-          diaComboBox.setBounds(350, 260, 100, 30);
+          diaComboBox.setBounds(570, 260, 100, 30);
             
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             Date date = new Date();
@@ -140,7 +147,7 @@ public class EscogerTicket extends GeneralPanel {
           
         
           diaLabel= new JLabel("Día:");
-          diaLabel.setBounds(290, 175, 200, 200);
+          diaLabel.setBounds(525, 175, 200, 200);
           diaLabel.setFont (diaLabel.getFont ().deriveFont (20f));
           add(diaLabel); 
           
@@ -153,22 +160,22 @@ public class EscogerTicket extends GeneralPanel {
           add(continuar);
                
           horaComboBox= new JComboBox();
-          horaComboBox.setBounds(350, 340, 100, 30);
+          horaComboBox.setBounds(580, 340, 100, 30);
           horaComboBox.addActionListener(this);
           add(horaComboBox);
           
           horaLabel= new JLabel("Hora:");
-          horaLabel.setBounds(290, 340, 100, 30);
+          horaLabel.setBounds(525, 340, 100, 30);
           horaLabel.setFont (horaLabel.getFont ().deriveFont (20f));
           add(horaLabel); 
           
           numeroAutobusLabel= new JLabel("Número Autobus:");
-          numeroAutobusLabel.setBounds(290, 420, 200, 30);
+          numeroAutobusLabel.setBounds(525, 410, 200, 30);
           numeroAutobusLabel.setFont (numeroAutobusLabel.getFont ().deriveFont (20f));
           add(numeroAutobusLabel);
           
           plazasLibresLabel= new JLabel("Plazas libres:");
-          plazasLibresLabel.setBounds(290, 460, 200, 30);
+          plazasLibresLabel.setBounds(525, 450, 200, 30);
           plazasLibresLabel.setFont (plazasLibresLabel.getFont ().deriveFont (20f));
           add(plazasLibresLabel);
      }
@@ -177,10 +184,14 @@ public class EscogerTicket extends GeneralPanel {
       public void actionPerformed(ActionEvent e){
       
         if(e.getSource()==lineaComboBox){ 
+        codLinea=CodigosLineas.get(lineaComboBox.getSelectedIndex());
+            
+        pulsado=false;    
+            
         try {
         mycon = DriverManager.getConnection(url, "root", "");
         Statement mysts= mycon.createStatement();  
-        String selectSalidas="SELECT p.Nombre\n" +
+        String selectSalidas="SELECT p.Nombre,p.CodParad\n" +
         "FROM parada p,linea_parada lp,linea l\n" +
         "WHERE p.CodParad=lp.CodParad AND lp.CodLinea=l.CodLinea\n" +
         "AND l.Nombre=\'"+lineaComboBox.getSelectedItem()+"\'ORDER BY lp.posicion";
@@ -194,6 +205,8 @@ public class EscogerTicket extends GeneralPanel {
         BotonesLlegada.clear();
         LlegadasPanel.removeAll();
         
+        CodigosParadas.clear();
+        
         int i=0;
         
         
@@ -204,6 +217,7 @@ public class EscogerTicket extends GeneralPanel {
             SalidasPanel.add(BotonesSalida.get(i));
             BotonesSalida.get(i).addActionListener(this);
             BotonesSalida.get(i).setBackground(null);
+            CodigosParadas.add(resSelectSalidas.getInt(2));
             
             BotonesLlegada.add(new JButton(resSelectSalidas.getString("Nombre")));
             BotonesLlegada.get(i).setBounds(0, 20*i, 200, 20);
@@ -234,15 +248,13 @@ public class EscogerTicket extends GeneralPanel {
         }
                
          
-         
-         
          for(int x=0;x<BotonesSalida.size();x++){
             
-          
                
            if(e.getSource()==BotonesSalida.get(x)){
                 
-                
+                pulsado=true;
+               
                 for(int z=0;z<BotonesLlegada.size();z++){
                 BotonesLlegada.get(z).setBackground(null);
                 BotonesLlegada.get(z).setVisible(true);   
@@ -252,9 +264,7 @@ public class EscogerTicket extends GeneralPanel {
                 horaComboBox.removeAllItems();
                 horaComboBox.addActionListener(this);
                 
-               
-                   try {
-                     
+                
                        for(int y=0;y<BotonesSalida.size();y++){
                            
                            BotonesSalida.get(y).setBackground(null);
@@ -268,86 +278,115 @@ public class EscogerTicket extends GeneralPanel {
                        LlegadasPanel.remove(BotonesSalida.get(x));
                        BotonesLlegada.get(x).setVisible(false);
                        
-                       try {    
+                    
+                       codSalida=CodigosParadas.get(x);
+                       
+                       
                   
-                   Statement mystsSalida= mycon.createStatement();
-                   String sqlSalida="SELECT parada.CodParad\n" +
-                    "FROM parada\n" +
-                    "WHERE parada.Nombre=\'"+nombreLlegada+"\'";
-                   ResultSet rsSalida= mystsSalida.executeQuery(sqlSalida);
+              
+             }
+        
+         }
+          
+        
+          for(int x=0;x<BotonesLlegada.size();x++){
+               
+           if(e.getSource()==BotonesLlegada.get(x)){
+                   
+                   
+                   
+                   for(int y=0;y<BotonesLlegada.size();y++){
+                       BotonesLlegada.get(y).setBackground(null);
+                       
+                   }
+                   
+                   BotonesLlegada.get(x).setBackground(Color.yellow);
+                   nombreLlegada=BotonesLlegada.get(x).getText();
+                   
+            
+                
+             if(pulsado==true){
+                 
+                 
+                 
+               codLlegada=CodigosParadas.get(x);
+               
+               try{
+                   
+                   try {    
                   
-                    while(rsSalida.next())
+                   String sqlSalidaPos="SELECT Posicion FROM linea_parada WHERE CodParad=? AND CodLinea=?";
+                   PreparedStatement mystsSalidaPos= mycon.prepareStatement(sqlSalidaPos);
+                   mystsSalidaPos.setString(1, String.valueOf(codSalida));
+                   mystsSalidaPos.setString(2, String.valueOf(codLinea));
+                   ResultSet rsSalidaPos= mystsSalidaPos.executeQuery();
+                  
+                    while(rsSalidaPos.next())
                     {
-                     codSalida=rsSalida.getInt("CodParad");
+                     posicionSalida=rsSalidaPos.getInt("Posicion");
                     }
+                    
+                   mystsSalidaPos.setString(1, String.valueOf(codLlegada));
+                   mystsSalidaPos.setString(2, String.valueOf(codLinea));
+                   rsSalidaPos= mystsSalidaPos.executeQuery();
+                    while(rsSalidaPos.next())
+                    {
+                     posicionLlegada=rsSalidaPos.getInt("Posicion");
+                    }
+              
                    
                } catch (SQLException ex) {
                    Logger.getLogger(EscogerTicket.class.getName()).log(Level.SEVERE, null, ex);
                }
-                      
-                       
+                   
+                   if(posicionSalida<posicionLlegada){
+                       isVuelta=0;
+                   }else{
+                       isVuelta=1;
+                   }
+                   
                        currentPos=x;
                        Statement mystsHora= mycon.createStatement();
                        String sqlHora="SELECT r.HoraSalida\n" +
                                "FROM recorridos r,autobus a,linea l\n" +
                                "WHERE r.CodAutobus=a.CodBus AND l.CodLinea=a.CodLinea\n" +
-                               "AND l.Nombre=\'"+lineaComboBox.getSelectedItem()+"\' AND r.Dia=\'"+diaComboBox.getSelectedItem()+"\' ORDER BY HoraSalida";
+                               "AND l.Nombre=\'"+lineaComboBox.getSelectedItem()+"\' AND r.Dia=\'"+diaComboBox.getSelectedItem()+"\' AND isVuelta="+isVuelta+" ORDER BY HoraSalida";
                        ResultSet rsHora = mystsHora.executeQuery(sqlHora);
                        while(rsHora.next())
                            
                        {
+                           
                            int minutos_total=rsHora.getInt("HoraSalida");
-                           minutos_total+=5*x;
+                           minutos_total+=5*(posicionSalida-1);
                            int horas=minutos_total/60;
                            int minutos=minutos_total-(horas*60);
+                           if(horas>24){
+                               horas-=24;
+                           }
                            if(minutos>=10)
                                horaComboBox.addItem(String.valueOf(horas)+':'+String.valueOf(minutos));
                            else if(minutos>0)
                                horaComboBox.addItem(String.valueOf(horas)+":0"+String.valueOf(minutos));
                            else
                                horaComboBox.addItem(String.valueOf(horas)+":00");
-                       }      } catch (SQLException ex) {
-                       Logger.getLogger(EscogerTicket.class.getName()).log(Level.SEVERE, null, ex);
-                   }
-              
-             }
-        
-         }
-           
-          for(int x=0;x<BotonesLlegada.size();x++){
-               
-           if(e.getSource()==BotonesLlegada.get(x)){
-               
-               
-                   for(int y=0;y<BotonesLlegada.size();y++){
-                       BotonesLlegada.get(y).setBackground(null);
+                       } 
                        
-                   }
-                   BotonesLlegada.get(x).setBackground(Color.yellow);
-                   nombreLlegada=BotonesLlegada.get(x).getText();
-               try {    
-                  
-                   Statement mystsLlegada= mycon.createStatement();
-                   String sqlLlegada="SELECT parada.CodParad\n" +
-                    "FROM parada\n" +
-                    "WHERE parada.Nombre=\'"+nombreLlegada+"\'";
-                   ResultSet rsLlegada= mystsLlegada.executeQuery(sqlLlegada);
-                  
-                    while(rsLlegada.next())
-                    {
-                     codLlegada=rsLlegada.getInt("CodParad");
-                    }
-                   
-               } catch (SQLException ex) {
-                   Logger.getLogger(EscogerTicket.class.getName()).log(Level.SEVERE, null, ex);
-               }
-              
+                       } catch (SQLException ex) {
+                       Logger.getLogger(EscogerTicket.class.getName()).log(Level.SEVERE, null, ex);
+                       }
+               
+               
+               
              }
+           }
         
          }
           
           
         if(e.getSource()==horaComboBox){ 
+            
+              
+                
                 int char_pos=horaComboBox.getSelectedItem().toString().indexOf(":");
                 int horas=Integer.parseInt(horaComboBox.getSelectedItem().toString().substring(0, char_pos))*60;
                 int mins=Integer.parseInt(horaComboBox.getSelectedItem().toString().substring(char_pos+1));
