@@ -7,6 +7,7 @@ package ethasy3maquinabilletes;
 
 import ethasy3maquinabilletes.Main.GeneralPanel;
 import ethasy3maquinabilletes.Main.VentanaPrincipal;
+import java.awt.event.ActionEvent;
 import java.text.DecimalFormat;
 import javax.swing.*;
 /**
@@ -16,9 +17,14 @@ import javax.swing.*;
 public class VentanaPagar extends GeneralPanel {
 
     JLabel Total, Pagado,Restante;
-    float TotalF=0,PagadoF=0,CambiosF=0;
+    double TotalF=0,PagadoF=0,CambiosF=0;
+    VentanaPrincipal Padre;
+    JButton B200,B100,B50,B20,B10,B5,M2,M1,M50,M20,M10,M5,M02,M01,volver;
+    ImageIcon B200I,B100I,B50I,B20I,B10I,B5I,M1I,M50I,M20I,M10I,M5I,M02I,M01I;
+    
     VentanaPagar(int w,int h,VentanaPrincipal Parent)
     {
+        Padre=Parent;
         this.setLayout(null);
         Total= new JLabel("Total:");
         Total.setBounds(150,50,600,40);
@@ -34,13 +40,140 @@ public class VentanaPagar extends GeneralPanel {
         Restante.setBounds(93,130,600,40);
         Restante.setFont (Restante.getFont ().deriveFont (30f));
         add(Restante);
+        
+            B200I=new ImageIcon("src\\ethasy3maquinabilletes\\img\\200.png");
+            B200 = new JButton(B200I);
+            B200.setBounds(50,250,90,50);
+            add(B200);
+            B200.addActionListener(this);
+
+            B100I=new ImageIcon("src\\ethasy3maquinabilletes\\img\\100.png");
+            B100 = new JButton(B100I);
+            B100.setBounds(50,305,90,50);
+            add(B100);
+            B100.addActionListener(this);
+
+            B50I=new ImageIcon("src\\ethasy3maquinabilletes\\img\\50.png");
+            B50 = new JButton(B50I);
+            B50.setBounds(50,360,90,50);
+            add(B50);
+            B50.addActionListener(this);
+
+            B20I=new ImageIcon("src\\ethasy3maquinabilletes\\img\\20.png");
+            B20 = new JButton(B20I);
+            B20.setBounds(145,250,90,50);
+            add(B20);
+            B20.addActionListener(this);
+
+            B10I=new ImageIcon("src\\ethasy3maquinabilletes\\img\\10.png");
+            B10 = new JButton(B10I);
+            B10.setBounds(145,305,90,50);
+            add(B10);
+            B10.addActionListener(this);
+
+            B5I=new ImageIcon("src\\ethasy3maquinabilletes\\img\\5.png");
+            B5 = new JButton(B5I);
+            B5.setBounds(145,360,90,50);
+            add(B5);
+            B5.addActionListener(this);
+
+            M2= new JButton(ethasy3maquinabilletes.Main.ResizeImage("src\\ethasy3maquinabilletes\\img\\M2.png",50,50));
+            M2.setBounds(240, 245, 50, 50);
+            M2.setLayout(null);
+            M2.setOpaque(false);
+            M2.setContentAreaFilled(false);
+            M2.setBorderPainted(true);
+            add(M2);
+            M2.addActionListener(this);
+
+            M1= new JButton(ethasy3maquinabilletes.Main.ResizeImage("src\\ethasy3maquinabilletes\\img\\M1.png",50,50));
+            M1.setBounds(240, 304, 50, 50);
+            M1.setLayout(null);
+            M1.setOpaque(false);
+            M1.setContentAreaFilled(false);
+            M1.setBorderPainted(true);
+            add(M1);
+            M1.addActionListener(this);
+
+            M50= new JButton(ethasy3maquinabilletes.Main.ResizeImage("src\\ethasy3maquinabilletes\\img\\M50.png",50,50));
+            M50.setBounds(240, 360, 50, 50);
+            M50.setLayout(null);
+            M50.setOpaque(false);
+            M50.setContentAreaFilled(false);
+            M50.setBorderPainted(true);
+            add(M50);
+            M50.addActionListener(this);
+
+            M20= new JButton(ethasy3maquinabilletes.Main.ResizeImage("src\\ethasy3maquinabilletes\\img\\M20.png",50,50));
+            M20.setBounds(305, 245, 50, 50);
+            M20.setLayout(null);
+            M20.setOpaque(false);
+            M20.setContentAreaFilled(false);
+            M20.setBorderPainted(true);
+            add(M20);
+            M20.addActionListener(this);
+
+            M10= new JButton(ethasy3maquinabilletes.Main.ResizeImage("src\\ethasy3maquinabilletes\\img\\M10.png",50,50));
+            M10.setBounds(305, 300, 50, 50);
+            M10.setLayout(null);
+            M10.setOpaque(false);
+            M10.setContentAreaFilled(false);
+            M10.setBorderPainted(true);
+            add(M10);
+            M10.addActionListener(this);
+
+            M5= new JButton(ethasy3maquinabilletes.Main.ResizeImage("src\\ethasy3maquinabilletes\\img\\C5.png",50,50));
+            M5.setBounds(307, 360, 50, 50);
+            M5.setLayout(null);
+            M5.setOpaque(false);
+            M5.setContentAreaFilled(false);
+            M5.setBorderPainted(true);
+            add(M5);
+            M5.addActionListener(this);
+
+            M02= new JButton(ethasy3maquinabilletes.Main.ResizeImage("src\\ethasy3maquinabilletes\\img\\c2.png",50,50));
+            M02.setBounds(373, 360, 50, 50);
+            M02.setLayout(null);
+            M02.setOpaque(false);
+            M02.setContentAreaFilled(false);
+            M02.setBorderPainted(true);
+            add(M02);
+            M02.addActionListener(this);
+
+            M01= new JButton(ethasy3maquinabilletes.Main.ResizeImage("src\\ethasy3maquinabilletes\\img\\C1.png",50,50));
+            M01.setBounds(373, 303, 50, 50);
+            M01.setLayout(null);
+            M01.setOpaque(false);
+            M01.setContentAreaFilled(false);
+            M01.setBorderPainted(true);
+            add(M01);
+            M01.addActionListener(this);
+            
+            volver= new JButton("Volver");
+            volver.setBounds(50,450,100,50);
+            add(volver);
+            volver.addActionListener(this);
+            
     }
 
+    @Override
+    void ClearText() {
+        TotalF=Padre.currentBil.toDouble();
+        Total.setText("Total: "+Padre.currentBil.toDouble());
+        PagadoF=0;
+        Pagado.setText("Pagado: 0.00€");
+        CambiosF=0;
+        Restante.setText("Restanet: 0.00€");
+    }
+
+    
+    
     void ActualizarTexto()
     {
         DecimalFormat df= new DecimalFormat("0.00");
         Total.setText("Total: "+df.format(TotalF)+"€");
         Pagado.setText("Insertado: "+df.format(PagadoF)+"€");
+        CambiosF=TotalF-PagadoF;
         Restante.setText("Insertado: "+df.format(CambiosF)+"€");
     }
     void CheckPago()
@@ -55,8 +188,9 @@ public class VentanaPagar extends GeneralPanel {
                 {
                     CambioCents(PagadoF,TotalF);
                 }
-
+                Padre.currentBil.InserEnBaseDatos();
                 PagadoF=0;
+                Padre.PanelChanger(6, 3);
             }
         }
 
@@ -174,4 +308,93 @@ public class VentanaPagar extends GeneralPanel {
         OutPut+="Gracias por su compra!";
         JOptionPane.showMessageDialog(null, OutPut);
     }
+    
+    public void actionPerformed(ActionEvent e) {
+            
+
+            if(e.getSource()==B200)
+            {
+                PagadoF+=200;
+                ActualizarTexto();
+                CheckPago();
+            }
+            if(e.getSource()==B100)
+            {
+                PagadoF+=100;
+                ActualizarTexto();
+                CheckPago();
+            }
+            if(e.getSource()==B50)
+            {
+                PagadoF+=50;
+                ActualizarTexto();
+                CheckPago();
+            }
+            if(e.getSource()==B20)
+            {
+                PagadoF+=20;
+                ActualizarTexto();
+                CheckPago();
+            }
+            if(e.getSource()==B10)
+            {
+                PagadoF+=10;
+                ActualizarTexto();
+                CheckPago();
+            }
+            if(e.getSource()==B5)
+            {
+                PagadoF+=5;
+                ActualizarTexto();
+                CheckPago();
+            }
+            if(e.getSource()==M2)
+            {
+                PagadoF+=2;
+                ActualizarTexto();
+                CheckPago();
+            }
+            if(e.getSource()==M1)
+            {
+                PagadoF+=1;
+                ActualizarTexto();
+                CheckPago();
+            }
+            if(e.getSource()==M50)
+            {
+                PagadoF+=0.5;
+                ActualizarTexto();
+                CheckPago();
+            }
+            if(e.getSource()==M20)
+            {
+                PagadoF+=0.2;
+                ActualizarTexto();
+                CheckPago();
+            }
+            if(e.getSource()==M10)
+            {
+                PagadoF+=0.1;
+                ActualizarTexto();
+                CheckPago();
+            }
+            if(e.getSource()==M5)
+            {
+                PagadoF+=0.05;
+                ActualizarTexto();
+                CheckPago();
+            }
+            if(e.getSource()==M02)
+            {
+                PagadoF+=0.02;
+                ActualizarTexto();
+                CheckPago();
+            }
+            if(e.getSource()==M01)
+            {
+                PagadoF+=0.01;
+                ActualizarTexto();
+                CheckPago();
+            }
+        }
 }

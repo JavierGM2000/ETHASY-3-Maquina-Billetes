@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.*;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
@@ -25,18 +26,20 @@ int NumB;
 String DNI;
 Date fechaC;
 String fechaS;
+String hora;
 int Origen;
 int LLegada;
 double precio;
 int Linea;
 int NumBus;
+int CodRecorrido;
 VentanaPrincipal Padre;
-    Billete(VentanaPrincipal Parent, String inDNI,Date inDate, String inFecha, int inOrigen,int inLegada,double inPrecio,int inLinea,int inBus)
+    Billete(VentanaPrincipal Parent, String inDNI,Date inDate, String inFecha, int inOrigen,int inLegada,double inPrecio,int inLinea,int inBus,String inHora,int inCodRecorrido)
     {
         try {
             Padre=Parent;
             Statement stBil = Parent.mycon.createStatement();
-            String query ="SELECT CodBil FROM Billetes";
+            String query ="SELECT CodBil FROM Billetes order by CodBil";
             ResultSet rs = stBil.executeQuery(query);
             if(rs.last())
             {
@@ -55,24 +58,96 @@ VentanaPrincipal Padre;
             precio=inPrecio;
             Linea=inLinea;
             NumBus=inBus;
-
+            hora=inHora;
+            CodRecorrido = inCodRecorrido;
+            
         } catch (SQLException ex) {
             Logger.getLogger(Billete.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
-        void imprimirTicket()
+        @Override
+        public String toString()
+        {
+        String Result="\n";
+    try {
+        String sql="SELECT Nombre FROM parada WHERE CodParad=?";
+        PreparedStatement prep = Padre.mycon.prepareStatement(sql);
+        prep.setInt(1, Origen);
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd  hh-mm");
+        ResultSet rs = prep.executeQuery();
+        rs.first();
+        
+        Result +=" Numero Billete: "+NumB+'\n';
+        Result +=" DNI: "+DNI+'\n';
+        Result +=" FechaSalida: "+fechaS+'\n';
+        Result +=" Hora salida: "+hora+'\n';
+        Result +=" Origen: "+Origen+'-'+rs.getString(1)+'\n';
+        prep.setInt(1, LLegada);
+        rs = prep.executeQuery();
+        rs.first();
+        Result +=" Llegada: "+LLegada+'-'+rs.getString(1)+'\n';
+        Result +=" Linea: "+Linea+'\n';
+        Result +=" NumBus: "+NumBus+'\n';
+        
+        
+        
+    } catch (SQLException ex) {
+        Logger.getLogger(Billete.class.getName()).log(Level.SEVERE, null, ex);
+    }
+        return Result;
+        }
+        
+        double toDouble()
+        {
+            double roundedFloat = Math.round(precio * 100.0) / 100.0;
+            return roundedFloat;
+            
+        }
+        
+        
+        void InserEnBaseDatos()
+        {
+    try {
+        DateFormat dateFormatF = new SimpleDateFormat("yyyy-MM-dd");
+        String sqlBillete="INSERT INTO billetes VALUES("+NumB+",\'"+DNI+"\',"
+                + "\'"+dateFormatF.format(fechaC)+"\',\'"+fechaS+
+                "\',\'"+hora+"\',"+Origen+","+LLegada+","
+                +Linea+","+NumBus+","+precio+")";
+        Statement sts= Padre.mycon.createStatement();
+        sts.executeUpdate(sqlBillete);
+        
+        String sqlRecorridos= "UPDATE recorridos SET PlazasOcupadas=PlazasOcupadas+1 "
+                + "WHERE cod_Recorrido=\'"+CodRecorrido+"\' AND Dia=\'"+fechaS+"\'";
+        sts.execute(sqlRecorridos);
+        
+        
+    } catch (SQLException ex) {
+        Logger.getLogger(Billete.class.getName()).log(Level.SEVERE, null, ex);
+    }
+        }
+
+        void imprimirTicket() throws SQLException
         {
         try {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-hh-mm");
+            String sql="SELECT Nombre FROM parada WHERE CodParad=?";
+            PreparedStatement prep = Padre.mycon.prepareStatement(sql);
+            prep.setInt(1, Origen);
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd  hh-mm");
+            ResultSet rs = prep.executeQuery();
+            rs.first();
             FileWriter MyLog;
             String Out= DNI+dateFormat.format(fechaC)+".txt";
             MyLog = new FileWriter(Out.trim());
             MyLog.append("Numero Billete:"+NumB+'\n');
             MyLog.append("DNI:"+DNI+'\n');
             MyLog.append("FechaSalida:"+fechaS+'\n');
-            MyLog.append("Origen:"+Origen+'\n');
-            MyLog.append("Llegada:"+LLegada+'\n');
+            MyLog.append("Hora salida:"+hora+'\n');
+            MyLog.append(" Origen: "+Origen+'-'+rs.getString(1)+'\n');
+            prep.setInt(1, LLegada);
+            rs = prep.executeQuery();
+            rs.first();
+            MyLog.append(" Llegada: "+LLegada+'-'+rs.getString(1)+'\n');
             MyLog.append("Linea:"+Linea+'\n');
             MyLog.append("NumBus:"+NumBus+'\n');
             MyLog.append("Preccio:"+precio+'\n');

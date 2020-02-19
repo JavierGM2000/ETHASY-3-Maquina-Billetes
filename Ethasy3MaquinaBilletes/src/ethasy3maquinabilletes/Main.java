@@ -71,6 +71,7 @@ public class Main {
 
     static public class VentanaPrincipal extends JFrame
     {
+        public Billete currentBil;
         private Cliente Current;
         private float cobrar;
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
@@ -121,7 +122,12 @@ public class Main {
             ListaPanel[4].setBounds(0, 0, 800, 600);
             ListaPanel[4].setVisible(false);
             add(ListaPanel[4]);
-
+            
+            ListaPanel[5]=new ResumenTicket(800,600,this);
+            ListaPanel[5].setBounds(0, 0, 800, 600);
+            ListaPanel[5].setVisible(false);
+            add(ListaPanel[5]);
+            
             ListaPanel[6]=new VentanaPagar(800,600,this);
             ListaPanel[6].setBounds(0, 0, 800, 600);
             ListaPanel[6].setVisible(false);
@@ -221,11 +227,16 @@ public class Main {
         void PanelChanger(int desde,int a_cual)
         {
             ListaPanel[desde].setVisible(false);
+            if(a_cual!=4)
             ListaPanel[a_cual].ClearText();
             ListaPanel[a_cual].setVisible(true);
             if(a_cual==3)
             {
                 ((SeleccionarOperacion)ListaPanel[a_cual]).setBienvenida(Current);
+            }
+            if(desde==3 && a_cual==4)
+            {
+                ListaPanel[a_cual].ClearText();
             }
         }
     }

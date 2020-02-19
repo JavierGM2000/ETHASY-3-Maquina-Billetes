@@ -46,6 +46,7 @@ public class EscogerTicket extends GeneralPanel {
     private String nombreSalida,nombreLlegada;
     private boolean pulsado=false;
     private VentanaPrincipal Padre;
+    private int CodRecorrido;
     
     
     
@@ -54,7 +55,7 @@ public class EscogerTicket extends GeneralPanel {
     ArrayList<Integer> CodigosParadas = new ArrayList();
     ArrayList<Integer> CodigosLineas = new ArrayList();
     ArrayList<Integer> horasSalidaOrg = new ArrayList();
-    
+    ArrayList<Integer> CodigosRecoridos = new ArrayList();
     
         String url="jdbc:mysql://localhost:3306/ethasy3test";
         Connection mycon;
@@ -156,6 +157,7 @@ public class EscogerTicket extends GeneralPanel {
           
           volver=new JButton("Volver");
           volver.setBounds(50, 500, 100, 50);
+          volver.addActionListener(this);
           add(volver);
           
           continuar=new JButton("Continuar");
@@ -183,16 +185,41 @@ public class EscogerTicket extends GeneralPanel {
           plazasLibresLabel.setFont (plazasLibresLabel.getFont ().deriveFont (20f));
           add(plazasLibresLabel);
      }
+
+    @Override
+    void ClearText() {
+        BotonesSalida.clear();
+        SalidasPanel.removeAll();
+        
+        BotonesLlegada.clear();
+        LlegadasPanel.removeAll();
+        
+        horaComboBox.removeActionListener(this);
+        horaComboBox.removeAllItems();
+        horaComboBox.addActionListener(this);
+        
+        lineaComboBox.setSelectedIndex(0);
+        
+        numeroAutobusLabel.setText("Número Autobus:");
+        plazasLibresLabel.setText("Plazas libres:");
+    }
      
+         
      
       public void actionPerformed(ActionEvent e){
-
+        
+        if(e.getSource()==volver)
+        {
+            Padre.PanelChanger(4, 3);
+        }
+          
         if(e.getSource()==continuar)
         {
-            Billete MyBil=new Billete(Padre,Padre.getCliente().DNI,new Date(),diaComboBox.getSelectedItem().toString()+horaComboBox.getSelectedItem().toString(),
-                    codSalida,codLlegada,10,codLinea,codBus);
+            Billete MyBil=new Billete(Padre,Padre.getCliente().DNI,new Date(),diaComboBox.getSelectedItem().toString(),
+                    codSalida,codLlegada,10,codLinea,codBus,(String)horaComboBox.getSelectedItem(),CodigosRecoridos.get(horaComboBox.getSelectedIndex()));
             MyBil.CalcularPrecio();
-            MyBil.imprimirTicket();
+            Padre.currentBil= MyBil;
+            Padre.PanelChanger(4, 5);
         }
 
         if(e.getSource()==lineaComboBox){ 
@@ -359,19 +386,20 @@ public class EscogerTicket extends GeneralPanel {
                    
                        currentPos=x;
                        Statement mystsHora= mycon.createStatement();
-                       String sqlHora="SELECT r.HoraSalida\n" +
+                       String sqlHora="SELECT r.HoraSalida,r.cod_Recorrido " +
                                "FROM recorridos r,autobus a,linea l\n" +
                                "WHERE r.CodAutobus=a.CodBus AND l.CodLinea=a.CodLinea\n" +
                                "AND l.Nombre=\'"+lineaComboBox.getSelectedItem()+"\' AND r.Dia=\'"+diaComboBox.getSelectedItem()+"\' AND isVuelta="+isVuelta+" ORDER BY HoraSalida";
                        ResultSet rsHora = mystsHora.executeQuery(sqlHora);
                        horasSalidaOrg.clear();
+                       CodigosRecoridos.clear();
                        if(isVuelta==0)
                        {
                         while(rsHora.next())
-                        {
-
+                        { 
                             int minutos_total=rsHora.getInt("HoraSalida");
                             horasSalidaOrg.add(minutos_total);
+                            CodigosRecoridos.add(rsHora.getInt(2));
                             minutos_total+=5*(posicionSalida-1);
                             int horas=minutos_total/60;
                             int minutos=minutos_total-(horas*60);
@@ -391,8 +419,10 @@ public class EscogerTicket extends GeneralPanel {
                         int totalParadas = CodigosParadas.size();
                         while(rsHora.next())
                         {
+                            
                             int minutos_total=rsHora.getInt("HoraSalida");
                             horasSalidaOrg.add(minutos_total);
+                            CodigosRecoridos.add(rsHora.getInt(2));
                             minutos_total+=5*(totalParadas-posicionSalida-1);
                             int horas=minutos_total/60;
                             int minutos=minutos_total-(horas*60);
@@ -405,9 +435,11 @@ public class EscogerTicket extends GeneralPanel {
                                 horaComboBox.addItem(String.valueOf(horas)+":0"+String.valueOf(minutos));
                             else
                                 horaComboBox.addItem(String.valueOf(horas)+":00");
-                        }   
+                        }
+                        
                        }
-                           
+                       horaComboBox.setSelectedIndex(0);
+                          
                        } catch (SQLException ex) {
                        Logger.getLogger(EscogerTicket.class.getName()).log(Level.SEVERE, null, ex);
                        }
