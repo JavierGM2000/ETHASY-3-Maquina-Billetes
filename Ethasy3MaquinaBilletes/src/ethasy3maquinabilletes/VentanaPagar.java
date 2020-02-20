@@ -21,6 +21,7 @@ public class VentanaPagar extends GeneralPanel {
     VentanaPrincipal Padre;
     JButton B200,B100,B50,B20,B10,B5,M2,M1,M50,M20,M10,M5,M02,M01,volver;
     ImageIcon B200I,B100I,B50I,B20I,B10I,B5I,M1I,M50I,M20I,M10I,M5I,M02I,M01I;
+    private final JLabel imgfondo;
     
     VentanaPagar(int w,int h,VentanaPrincipal Parent)
     {
@@ -154,6 +155,10 @@ public class VentanaPagar extends GeneralPanel {
             add(volver);
             volver.addActionListener(this);
             
+            ImageIcon fondo=ethasy3maquinabilletes.Main.ResizeImage("img\\FondoRegistro.png",w,h);
+            imgfondo=new JLabel(fondo);
+            imgfondo.setBounds(0, 0, 800, 600);
+            add(imgfondo);
     }
 
     @Override

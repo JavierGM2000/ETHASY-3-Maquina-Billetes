@@ -23,6 +23,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -59,6 +60,7 @@ public class EscogerTicket extends GeneralPanel {
     
         String url="jdbc:mysql://localhost:3306/ethasy3test";
         Connection mycon;
+    private final JLabel imgfondo;
  
          EscogerTicket(int w,int h,Main.VentanaPrincipal Parent) throws SQLException, ClassNotFoundException
         {
@@ -82,9 +84,9 @@ public class EscogerTicket extends GeneralPanel {
           lineaComboBox.addActionListener(this);
           
   
-          checkboxIdaVuelta= new JCheckBox("¿Quieres que el viaje sea de Ida y Vuelta?");
+          /*checkboxIdaVuelta= new JCheckBox("¿Quieres que el viaje sea de Ida y Vuelta?");
           checkboxIdaVuelta.setBounds(180,130,350,30);
-          add(checkboxIdaVuelta);
+          add(checkboxIdaVuelta);*/
           
           lineaLabel= new JLabel("Linea:");
           lineaLabel.setBounds(180,40,80,20);
@@ -184,6 +186,11 @@ public class EscogerTicket extends GeneralPanel {
           plazasLibresLabel.setBounds(525, 450, 200, 30);
           plazasLibresLabel.setFont (plazasLibresLabel.getFont ().deriveFont (20f));
           add(plazasLibresLabel);
+          
+          ImageIcon fondo=ethasy3maquinabilletes.Main.ResizeImage("img\\FondoBillete.png",w,h);
+            imgfondo=new JLabel(fondo);
+            imgfondo.setBounds(0, 0, 800, 600);
+            add(imgfondo);
      }
 
     @Override

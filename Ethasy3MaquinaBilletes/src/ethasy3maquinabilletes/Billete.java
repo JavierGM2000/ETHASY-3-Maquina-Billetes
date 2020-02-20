@@ -7,7 +7,9 @@ import java.io.IOException;
 import java.sql.*;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,7 +35,7 @@ double precio;
 int Linea;
 int NumBus;
 int CodRecorrido;
-VentanaPrincipal Padre;
+static VentanaPrincipal Padre;
     Billete(VentanaPrincipal Parent, String inDNI,Date inDate, String inFecha, int inOrigen,int inLegada,double inPrecio,int inLinea,int inBus,String inHora,int inCodRecorrido)
     {
         try {
@@ -207,5 +209,36 @@ VentanaPrincipal Padre;
             double distancia = radioTierra * va2;
             return distancia; // distancia en kms entre dos puntos(paradaInicio-paradaFin)
     }
+        public static ArrayList<Billete> GetBilletes(VentanaPrincipal p,String DNI) throws SQLException
+        {
+            ArrayList<Billete> Result= new ArrayList();
+            String sql="SELECT * FROM billetes where DNI=\'"+DNI+"\' ORDER BY fechaC desc";
+            Statement sts= p.mycon.createStatement();
+            ResultSet rs= sts.executeQuery(sql);
+            rs.first();
+            for(int i=0;rs.next();i++)
+            {
+                try {
+                    Result.add(new Billete(p,
+                            DNI,
+                            new SimpleDateFormat("yyyy-MM-dd").parse(rs.getString(4)),
+                            rs.getString(4),
+                            rs.getInt(6),
+                            rs.getInt(7),
+                            1,
+                            rs.getInt(8),
+                            rs.getInt(9),
+                            rs.getString(5),
+                            0));
+                    ((Billete)Result.get(i)).CalcularPrecio();
+                } catch (ParseException ex) {
+                    Logger.getLogger(Billete.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            
+            
+            //,,String inHora,int inCodRecorrido)
+            return Result;
+        }
 }
 

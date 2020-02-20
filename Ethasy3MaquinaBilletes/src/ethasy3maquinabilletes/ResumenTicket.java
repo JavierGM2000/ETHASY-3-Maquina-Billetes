@@ -26,6 +26,7 @@ public class ResumenTicket extends GeneralPanel{
     private JTextField P;
     private JTextArea info;
     private VentanaPrincipal Padre;
+    private final JLabel imgfondo;
     
 
     public ResumenTicket(int w,int h,VentanaPrincipal Parent){
@@ -66,6 +67,11 @@ public class ResumenTicket extends GeneralPanel{
         volver.addActionListener(this);
 
 
+         ImageIcon fondo=ethasy3maquinabilletes.Main.ResizeImage("img\\FondoSeleccion.png",w,h);
+            imgfondo=new JLabel(fondo);
+            imgfondo.setBounds(0, 0, 800, 600);
+            add(imgfondo);
+        
     }
 
     @Override

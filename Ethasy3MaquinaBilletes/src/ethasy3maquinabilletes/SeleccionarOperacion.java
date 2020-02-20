@@ -75,6 +75,11 @@ public class SeleccionarOperacion extends GeneralPanel{
         {
             Padre.PanelChanger(3,4);
         }
+        
+        if(e.getSource()==consultar)
+        {
+            Padre.PanelChanger(3,7);
+        }
 
      }
     }

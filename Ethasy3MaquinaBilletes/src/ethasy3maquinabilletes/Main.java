@@ -37,15 +37,26 @@ public class Main {
 
     static public String CodificarPassword(String orgPassword)
     {
-        char[] Lista= orgPassword.toCharArray();
+        char[] lista= orgPassword.toCharArray();
         int length= orgPassword.length();
         char firstchar= (char) Math.abs((orgPassword.charAt(0) - 'A'));
-        for(int i = 0;i<length;i++)
+        if(firstchar!=0)
         {
-            Lista[i]-=firstchar;
+            for(int i = 0;i<length;i++)
+            {
+                lista[i]-=firstchar;
+            }
+        }
+        else
+        {
+           for(int i = 0;i<length;i++)
+            {
+                if(i!=0)
+                lista[i]+=1;
+            } 
         }
 
-        return String.valueOf(Lista);
+        return String.valueOf(lista);
     }
 
     public static ImageIcon ResizeImage(String Path, int width, int height)
@@ -72,7 +83,7 @@ public class Main {
     static public class VentanaPrincipal extends JFrame
     {
         public Billete currentBil;
-        private Cliente Current;
+        private Cliente current;
         private float cobrar;
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         FileWriter MyLog;
@@ -107,11 +118,6 @@ public class Main {
             ListaPanel[2].setVisible(false);
             add(ListaPanel[2]);
             
-                    
-            ListaPanel[5]=new EscogerTicket(800,600,this);
-            ListaPanel[5].setBounds(0, 0, 800, 600);
-            ListaPanel[5].setVisible(false);
-            add(ListaPanel[5]);
 
             ListaPanel[3]=new SeleccionarOperacion(800,600,this);
             ListaPanel[3].setBounds(0, 0, 800, 600);
@@ -132,17 +138,21 @@ public class Main {
             ListaPanel[6].setBounds(0, 0, 800, 600);
             ListaPanel[6].setVisible(false);
             add(ListaPanel[6]);
-
+                    
+            ListaPanel[7]=new ListaTickets(800,600,this);
+            ListaPanel[7].setBounds(0, 0, 800, 600);
+            ListaPanel[7].setVisible(false);
+            add(ListaPanel[7]);
             
         }
 
         public void setCliente(Cliente New)
         {
-            Current = New;
+            current = New;
         }
         public Cliente getCliente()
         {
-            return Current;
+            return current;
         }
 
 
@@ -232,7 +242,7 @@ public class Main {
             ListaPanel[a_cual].setVisible(true);
             if(a_cual==3)
             {
-                ((SeleccionarOperacion)ListaPanel[a_cual]).setBienvenida(Current);
+                ((SeleccionarOperacion)ListaPanel[a_cual]).setBienvenida(current);
             }
             if(desde==3 && a_cual==4)
             {
