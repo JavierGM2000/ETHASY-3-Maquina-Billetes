@@ -5,10 +5,7 @@
 
 package ethasy3maquinabilletes;
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.IOException;
-import java.lang.Object;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
@@ -16,10 +13,8 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
-import java.nio.charset.Charset;
 import javax.imageio.ImageIO;
 import java.sql.*;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -84,71 +79,70 @@ public class Main {
     {
         public Billete currentBil;
         private Cliente current;
-        private float cobrar;
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         FileWriter MyLog;
         String url="jdbc:mysql://localhost:3306/ethasy3test?useUnicode=true&amp;characterEncoding=utf8";
         Connection mycon;
-        GeneralPanel[] ListaPanel= new GeneralPanel[8];
+        GeneralPanel[] listaPanel= new GeneralPanel[8];
         VentanaPrincipal() throws SQLException, ClassNotFoundException, IOException
         {
             mycon = DriverManager.getConnection(url, "root", "");
             Date fecha= new Date();
            // CalcularTiempoPorLine(fecha);
-            /*for(int i=0;i<14;i++)
+            for(int i=0;i<14;i++)
             {
             CalcularTiempoPorLine(fecha);
             fecha = addDays(fecha,1);
-            }*/
+            }
             setLayout(null);
             this.setBackground(Color.red);
             //this.setBounds(0, 0, 600, 800);
-            ListaPanel[0]=new BienvenidaVentana(800,600,this);
-            ListaPanel[0].setBounds(0, 0, 800, 600);
-            ListaPanel[0].setVisible(true);
-            add(ListaPanel[0]);
+            listaPanel[0]=new BienvenidaVentana(800,600,this);
+            listaPanel[0].setBounds(0, 0, 800, 600);
+            listaPanel[0].setVisible(true);
+            add(listaPanel[0]);
 
-            ListaPanel[1]=new Login(800,600,this);
-            ListaPanel[1].setBounds(0, 0, 800, 600);
-            ListaPanel[1].setVisible(false);
-            add(ListaPanel[1]);
+            listaPanel[1]=new Login(800,600,this);
+            listaPanel[1].setBounds(0, 0, 800, 600);
+            listaPanel[1].setVisible(false);
+            add(listaPanel[1]);
             
-            ListaPanel[2]=new Registrar(800,600,this);
-            ListaPanel[2].setBounds(0, 0, 800, 600);
-            ListaPanel[2].setVisible(false);
-            add(ListaPanel[2]);
+            listaPanel[2]=new Registrar(800,600,this);
+            listaPanel[2].setBounds(0, 0, 800, 600);
+            listaPanel[2].setVisible(false);
+            add(listaPanel[2]);
             
 
-            ListaPanel[3]=new SeleccionarOperacion(800,600,this);
-            ListaPanel[3].setBounds(0, 0, 800, 600);
-            ListaPanel[3].setVisible(false);
-            add(ListaPanel[3]);
+            listaPanel[3]=new SeleccionarOperacion(800,600,this);
+            listaPanel[3].setBounds(0, 0, 800, 600);
+            listaPanel[3].setVisible(false);
+            add(listaPanel[3]);
 
-            ListaPanel[4]=new EscogerTicket(800,600,this);
-            ListaPanel[4].setBounds(0, 0, 800, 600);
-            ListaPanel[4].setVisible(false);
-            add(ListaPanel[4]);
+            listaPanel[4]=new EscogerTicket(800,600,this);
+            listaPanel[4].setBounds(0, 0, 800, 600);
+            listaPanel[4].setVisible(false);
+            add(listaPanel[4]);
             
-            ListaPanel[5]=new ResumenTicket(800,600,this);
-            ListaPanel[5].setBounds(0, 0, 800, 600);
-            ListaPanel[5].setVisible(false);
-            add(ListaPanel[5]);
+            listaPanel[5]=new ResumenTicket(800,600,this);
+            listaPanel[5].setBounds(0, 0, 800, 600);
+            listaPanel[5].setVisible(false);
+            add(listaPanel[5]);
             
-            ListaPanel[6]=new VentanaPagar(800,600,this);
-            ListaPanel[6].setBounds(0, 0, 800, 600);
-            ListaPanel[6].setVisible(false);
-            add(ListaPanel[6]);
+            listaPanel[6]=new VentanaPagar(800,600,this);
+            listaPanel[6].setBounds(0, 0, 800, 600);
+            listaPanel[6].setVisible(false);
+            add(listaPanel[6]);
                     
-            ListaPanel[7]=new ListaTickets(800,600,this);
-            ListaPanel[7].setBounds(0, 0, 800, 600);
-            ListaPanel[7].setVisible(false);
-            add(ListaPanel[7]);
+            listaPanel[7]=new ListaTickets(800,600,this);
+            listaPanel[7].setBounds(0, 0, 800, 600);
+            listaPanel[7].setVisible(false);
+            add(listaPanel[7]);
             
         }
 
-        public void setCliente(Cliente New)
+        public void setCliente(Cliente newC)
         {
-            current = New;
+            current = newC;
         }
         public Cliente getCliente()
         {
@@ -160,6 +154,12 @@ public class Main {
         {
             Date date = fecha;
             SimpleDateFormat formattter = new SimpleDateFormat("yyyy-MM-dd");
+            String sqlDia="SELECT count(*) FROM recorridos where dia=\'"+formattter.format(date)+"\'";
+            Statement stsDia= mycon.createStatement();
+            ResultSet rsDia= stsDia.executeQuery(sqlDia);
+            rsDia.first();
+            if(rsDia.getInt(1)==0)
+            {
             int hora_inicio=7*60;
             int t_paradas=5;
             int max_lim=24*60;
@@ -188,8 +188,7 @@ public class Main {
                 int current_bus=1;
                 while(rs2.next())
                 {
-                    isVuelta=0;
-                    int veces=(max_lim-(hora_inicio+30*((current_bus)-1)))/rs.getInt(2);
+                    int veces=(max_lim-(hora_inicio+30*((current_bus)-1)))/rs.getInt(3);
                     for(int x=0;x<veces;x++)
                     {
                     sentencia.setString(1, String.valueOf(codRecor++));
@@ -214,6 +213,7 @@ public class Main {
 
                 current_bus=0;
             }
+            }
         }
 
         void LogThing(ArrayList<String> ToLog)
@@ -236,17 +236,17 @@ public class Main {
 
         void PanelChanger(int desde,int a_cual)
         {
-            ListaPanel[desde].setVisible(false);
+            listaPanel[desde].setVisible(false);
             if(a_cual!=4)
-            ListaPanel[a_cual].ClearText();
-            ListaPanel[a_cual].setVisible(true);
+            listaPanel[a_cual].ClearText();
+            listaPanel[a_cual].setVisible(true);
             if(a_cual==3)
             {
-                ((SeleccionarOperacion)ListaPanel[a_cual]).setBienvenida(current);
+                ((SeleccionarOperacion)listaPanel[a_cual]).setBienvenida(current);
             }
             if(desde==3 && a_cual==4)
             {
-                ListaPanel[a_cual].ClearText();
+                listaPanel[a_cual].ClearText();
             }
         }
     }
